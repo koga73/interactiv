@@ -45,8 +45,13 @@ const window = new Window({
 	id: "window",
 	label: " My Window ",
 	children: [windowText1, input1, windowText2, input2, btn],
+	position: Window.DEFAULT_POSITION.extend({
+		originX: ORIGIN.X.CENTER,
+		originY: ORIGIN.Y.TOP
+	}),
 	style: Screen.DEFAULT_STYLE.extend({
-		border: BORDER.DOUBLE
+		border: BORDER.SINGLE,
+		backgroundColor: COLORS.BG.RED
 	}),
 	onSelect: () => {
 		window.remove();

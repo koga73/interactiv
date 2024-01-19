@@ -9,7 +9,7 @@ class Theme {
 		const componentType = component.constructor.name.toLowerCase();
 		const style = this.map[component.id] || this.map[componentType];
 		if (style) {
-			component.style = component.style.extend(style);
+			component.style = component.style.extend(style, true);
 		}
 		const childrenLen = component._children.length;
 		for (let i = 0; i < childrenLen; i++) {

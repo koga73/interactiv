@@ -19,6 +19,9 @@ class Style {
 		this.labelBackgroundColor = labelBackgroundColor;
 		this.labelColor = labelColor;
 
+		//Place to store extended prop values so they don't get overwritten by theme
+		this._extended = {};
+
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
@@ -26,16 +29,22 @@ class Style {
 	}
 
 	clone() {
-		return new Style(this);
+		const style = new Style(this);
+		style._extended = {...this._extended};
+		return style;
 	}
 
-	extend(props, soft = false) {
+	extend(fromStyle, soft = false) {
 		const style = this.clone();
-		for (const prop in props) {
+		const props = ["backgroundColor", "color", "border", "borderBackgroundColor", "borderColor", "labelBackgroundColor", "labelColor"];
+		for (const prop of props) {
 			if (soft) {
-				style[prop] = style[prop] || props[prop];
+				style[prop] = style._extended[prop] ?? fromStyle[prop];
 			} else {
-				style[prop] = props[prop];
+				style[prop] = fromStyle[prop] ?? style[prop];
+				if (fromStyle[prop]) {
+					style._extended[prop] = fromStyle[prop];
+				}
 			}
 		}
 		return style;

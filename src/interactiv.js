@@ -37,6 +37,9 @@ class _class {
 		}
 		readline.emitKeypressEvents(process.stdin);
 		process.stdin.on("keypress", _class._handler_keypress);
+
+		//Handle window resize
+		process.on("SIGWINCH", _class._handler_resize);
 	}
 
 	static destroy() {
@@ -46,6 +49,8 @@ class _class {
 		if (process.stdin.isTTY) {
 			process.stdin.setRawMode(false);
 		}
+
+		process.off("SIGWINCH", _class._handler_resize);
 
 		const {cols, rows} = _class.getWindowSize();
 		process.stdout.cursorTo(0, rows - 1);
@@ -170,6 +175,10 @@ class _class {
 			}
 		}
 		return focusList;
+	}
+
+	static _handler_resize(signal) {
+		_class.render(null, true);
 	}
 
 	static _handler_keypress(str, key) {

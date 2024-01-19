@@ -40,7 +40,7 @@ class Component {
 		this._parent = null;
 		this._computedPosition = null;
 		this._computedStyle = null;
-		this._reactiveProps = ["id", "label", "_children", "focusable", "position", "style"];
+		this._reactiveProps = ["label", "_children", "focusable", "position", "style"];
 		this._lastState = {};
 
 		if (children) {
