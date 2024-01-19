@@ -1,0 +1,15 @@
+{
+	"name": "interactiv",
+	"version": "0.1.0",
+	"description": "Make command line scripts beautiful and interactive",
+	"main": "src/interactiv.js",
+	"type": "module",
+	"scripts": {
+		"test": "node example.js"
+	},
+	"author": {
+		"name": "AJ Savino",
+		"email": "koga73@gmail.com"
+	},
+	"license": "MIT"
+}
