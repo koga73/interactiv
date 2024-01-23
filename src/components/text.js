@@ -4,11 +4,12 @@ import {CURSOR} from "../core/constants.js";
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Text extends Component {
+	static NAME = "Text";
+
 	static DEFAULT_POSITION = new Position({
 		width: "100%"
 	});
-
-	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP.text;
+	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Text.NAME];
 
 	constructor({id = "", label = "", position = null, style = null, value = ""}) {
 		super({
@@ -17,8 +18,8 @@ class Text extends Component {
 			focusable: false,
 			focusTrap: false,
 			children: null,
-			position: position ? position : Text.DEFAULT_POSITION.clone(),
-			style: style ? style : Text.DEFAULT_STYLE.clone()
+			position: position ? position : Text.DEFAULT_POSITION ? Text.DEFAULT_POSITION.clone() : null,
+			style: style ? style : Text.DEFAULT_STYLE ? Text.DEFAULT_STYLE.clone() : null
 		});
 
 		this.value = value;
@@ -67,11 +68,14 @@ class Text extends Component {
 
 	drawSelf() {
 		const {x, y} = this._computedPosition;
-		const {border, backgroundColor, color} = this._computedStyle;
+		const {border, backgroundColor, color, underline} = this._computedStyle;
 		const hasBorder = border !== null;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
+		if (underline) {
+			stdout.write(CURSOR.UNDERLINE);
+		}
 		stdout.write(backgroundColor);
 		stdout.write(color);
 

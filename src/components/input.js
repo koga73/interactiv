@@ -4,11 +4,13 @@ import {CURSOR} from "../core/constants.js";
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Input extends Component {
+	static NAME = "Input";
+
 	static DEFAULT_POSITION = new Position({
 		width: "100%"
 	});
-
-	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP.input;
+	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Input.NAME];
+	static DEFAULT_FOCUS_STYLE = ThemeDefault.DEFAULT_FOCUS_MAP[Input.NAME];
 
 	static DEFAULT_MASK = "*";
 	static DEFAUT_ALLOWED_CHARACTERS = /^[a-zA-Z0-9`~!@#$%^&*()_=+;:'",<.>/?|{}\[\]\\\x20-]$/;
@@ -17,6 +19,7 @@ class Input extends Component {
 		id = "",
 		label = "",
 		focusTrap = false,
+		focusStyle = null,
 		position = null,
 		style = null,
 		value = "",
@@ -30,9 +33,10 @@ class Input extends Component {
 			label,
 			focusable: true,
 			focusTrap,
+			focusStyle: focusStyle ? focusStyle : Input.DEFAULT_FOCUS_MAP ? Input.DEFAULT_FOCUS_MAP.clone() : null,
 			children: null,
-			position: position ? position : Input.DEFAULT_POSITION.clone(),
-			style: style ? style : Input.DEFAULT_STYLE.clone()
+			position: position ? position : Input.DEFAULT_POSITION ? Input.DEFAULT_POSITION.clone() : null,
+			style: style ? style : Input.DEFAULT_STYLE ? Input.DEFAULT_STYLE.clone() : null
 		});
 
 		this.value = value;
@@ -45,13 +49,14 @@ class Input extends Component {
 	}
 
 	clone() {
-		const {id, label, _children: children, focusable, focusTrap, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
+		const {id, label, _children: children, focusable, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
 		return new Input({
 			id,
 			label,
 			children,
 			focusable,
 			focusTrap,
+			focusStyle: focusStyle ? focusStyle.clone() : null,
 			position: position.clone(),
 			style: style.clone(),
 			value,
@@ -76,11 +81,14 @@ class Input extends Component {
 
 	drawSelf() {
 		const {x, y, width} = this._computedPosition;
-		const {border, backgroundColor, color} = this._computedStyle;
+		const {border, backgroundColor, color, underline} = this._computedStyle;
 		const hasBorder = border !== null;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
+		if (underline) {
+			stdout.write(CURSOR.UNDERLINE);
+		}
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
@@ -92,19 +100,6 @@ class Input extends Component {
 		const innerWidth = hasBorder ? width - 2 : width;
 		const val = this.mask ? this.mask.repeat(this.value.length) : this.value;
 		stdout.write(val.length > innerWidth ? val.slice(-innerWidth) : val);
-	}
-
-	onFocus() {
-		const {x, y, width} = this._computedPosition;
-		const hasBorder = this._computedStyle.border !== null;
-		const valLen = Math.min(this.value.length, hasBorder ? width - 2 : width);
-
-		const {stdout} = process;
-		if (hasBorder) {
-			stdout.cursorTo(x + 1 + valLen, y + 1);
-		} else {
-			stdout.cursorTo(x + valLen, y);
-		}
 	}
 
 	onKeyPress(str, key) {

@@ -4,12 +4,13 @@ import Position from "../core/position.js";
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Screen extends Component {
+	static NAME = "Screen";
+
 	static DEFAULT_POSITION = new Position({
 		width: "100%",
 		height: "100%"
 	});
-
-	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP.screen;
+	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Screen.NAME];
 
 	constructor({id = "", label = "", children = [], position = null, style = null, onSelect = null}) {
 		super({
@@ -18,8 +19,8 @@ class Screen extends Component {
 			focusable: false,
 			focusTrap: true,
 			children,
-			position: position ? position : Screen.DEFAULT_POSITION.clone(),
-			style: style ? style : Screen.DEFAULT_STYLE.clone()
+			position: position ? position : Screen.DEFAULT_POSITION ? Screen.DEFAULT_POSITION.clone() : null,
+			style: style ? style : Screen.DEFAULT_STYLE ? Screen.DEFAULT_STYLE.clone() : null
 		});
 
 		this.onSelect = onSelect;

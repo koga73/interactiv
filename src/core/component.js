@@ -5,7 +5,7 @@ import RenderLog from "./render-log.js";
 
 //Note: position is relative, computedPosition is absolute
 class Component {
-	constructor({id = "", label = "", children = [], focusable = false, focusTrap = false, position = null, style = null}) {
+	constructor({id = "", label = "", children = [], focusable = false, focusTrap = false, focusStyle = null, position = null, style = null}) {
 		this.id = id;
 		if (!this.id) {
 			throw new Error("Component must have an id");
@@ -13,6 +13,7 @@ class Component {
 		this.label = label;
 		this.focusable = focusable;
 		this.focusTrap = focusTrap;
+		this.focusStyle = focusStyle;
 		this.position = position ? position : new Position();
 		this.style = style ? style : new Style();
 
@@ -40,7 +41,8 @@ class Component {
 		this._parent = null;
 		this._computedPosition = null;
 		this._computedStyle = null;
-		this._reactiveProps = ["label", "_children", "focusable", "position", "style"];
+		this._focused = false;
+		this._reactiveProps = ["label", "focusable", "position", "style", "focusStyle", "_children", "_focused"];
 		this._lastState = {};
 
 		if (children) {
@@ -72,14 +74,14 @@ class Component {
 		let didRender = false;
 
 		this._parent = parent;
-		const {id, position, style, _children: children} = this;
+		const {id, position, style, focusStyle, _focused: focused, _children: children} = this;
 
 		const needsRender = force ? true : this.needsRender(false, debug);
 		if (needsRender) {
 			if (force) {
 				RenderLog.log(`'${id}' - force`);
 			}
-			this.computeStyle(style, {parentComputedStyle});
+			this.computeStyle(focused ? focusStyle || style : style, {parentComputedStyle});
 			this.computePosition(position, {parentComputedPosition, parentComputedStyle, previousChildPosition});
 			this.drawBackground();
 			this.drawBorder();
@@ -217,7 +219,9 @@ class Component {
 	}
 
 	drawSelf() {
-		//Not implemented
+		const {x, y} = this._computedPosition;
+		const {stdout} = process;
+		stdout.cursorTo(x, y);
 	}
 
 	drawChild(child) {
@@ -234,18 +238,12 @@ class Component {
 	}
 
 	onFocus() {
-		const {x, y} = this._computedPosition;
-
-		const {stdout} = process;
-		if (this.border) {
-			stdout.cursorTo(x + 1, y + 1);
-		} else {
-			stdout.cursorTo(x, y);
-		}
+		this._focused = true;
+		this.drawSelf();
 	}
 
 	onBlur() {
-		//Not implemented
+		this._focused = false;
 	}
 
 	onKeyPress(str, key) {

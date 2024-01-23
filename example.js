@@ -1,5 +1,5 @@
 import Interactiv, {Position, Style, ORIGIN, BORDER, COLORS, Theme} from "./src/interactiv.js";
-import {Screen, Window, Text, Input, Button} from "./src/interactiv.js";
+import {Screen, Window, Text, Input, Button, List} from "./src/interactiv.js";
 
 const windowText1 = new Text({
 	id: "windowText1",
@@ -45,14 +45,8 @@ const window = new Window({
 	id: "window",
 	label: " My Window ",
 	children: [windowText1, input1, windowText2, input2, btn],
-	position: Window.DEFAULT_POSITION.extend({
-		originX: ORIGIN.X.CENTER,
-		originY: ORIGIN.Y.TOP
-	}),
-	style: Screen.DEFAULT_STYLE.extend({
-		border: BORDER.SINGLE,
-		backgroundColor: COLORS.BG.RED
-	}),
+	focusTrap: false,
+	userClosable: true,
 	onSelect: () => {
 		window.remove();
 	}
@@ -71,6 +65,31 @@ const statusBar = new Text({
 	}),
 	value: "Status Bar 100%"
 });
+const list = new List({
+	id: "list",
+	items: ["Space", "XTree", "Ocean", "LavaBit"],
+	selectedIndex: 0,
+	position: List.DEFAULT_POSITION.extend({
+		marginLeft: 2,
+		paddingTop: 1,
+		paddingRight: 2,
+		paddingBottom: 1,
+		paddingLeft: 2
+	}),
+	label: " Theme ",
+	autoSelect: true,
+	onSelect: ({selectedItem}) => {
+		selectedItem = selectedItem.trim();
+		switch (selectedItem) {
+			case "Space":
+			case "XTree":
+			case "Ocean":
+			case "LavaBit":
+				Theme[selectedItem].applyToComponent(screen);
+				break;
+		}
+	}
+});
 const screen = new Screen({
 	id: "main",
 	position: Screen.DEFAULT_POSITION.extend({
@@ -80,15 +99,12 @@ const screen = new Screen({
 		border: BORDER.DOUBLE
 	}),
 	label: " My Application ",
-	children: [statusBar, input3, window],
+	children: [statusBar, input3, list, window],
 	onSelect: () => {
 		Interactiv.destroy();
 		console.log("Back to the terminal.");
 	}
 });
-
-//Change theme
-Theme.XTree.applyToComponent(screen);
 
 Interactiv.debug = true;
 Interactiv.initialize();

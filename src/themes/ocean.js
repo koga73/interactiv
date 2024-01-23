@@ -3,25 +3,31 @@ import Theme from "../core/theme.js";
 import Style from "../core/style.js";
 import {BORDER, COLORS} from "../core/constants.js";
 
-class Space extends Theme {
+class Ocean extends Theme {
 	static DEFAULT_MAP = {
 		Screen: new Style({
 			backgroundColor: COLORS.BG.BLACK,
-			color: COLORS.FG.WHITE
+			color: COLORS.FG.BLUE_BRIGHT
 		}),
 		Window: new Style({
-			border: BORDER.DOUBLE
+			border: BORDER.DOUBLE,
+			borderColor: COLORS.FG.CYAN,
+			labelColor: COLORS.FG.CYAN_BRIGHT
 		}),
 		Text: new Style(),
 		Input: new Style({
-			border: BORDER.SINGLE
+			border: BORDER.SINGLE,
+			borderColor: COLORS.FG.CYAN,
+			labelColor: COLORS.FG.CYAN_BRIGHT
 		}),
 		Button: new Style({
 			border: BORDER.SINGLE
 		}),
 		List: new Style({
 			border: BORDER.SINGLE,
-			selectedBackgroundColor: COLORS.BG.WHITE,
+			borderColor: COLORS.FG.CYAN,
+			labelColor: COLORS.FG.CYAN_BRIGHT,
+			selectedBackgroundColor: COLORS.BG.CYAN,
 			selectedColor: COLORS.FG.BLACK
 		})
 	};
@@ -29,13 +35,13 @@ class Space extends Theme {
 	static DEFAULT_FOCUS_MAP = {
 		Button: new Style({
 			border: BORDER.SINGLE,
-			backgroundColor: COLORS.BG.WHITE,
+			backgroundColor: COLORS.BG.BLUE_BRIGHT,
 			color: COLORS.FG.BLACK
 		})
 	};
 
-	constructor(map = Space.DEFAULT_MAP, focusMap = Space.DEFAULT_FOCUS_MAP) {
+	constructor(map = Ocean.DEFAULT_MAP, focusMap = Ocean.DEFAULT_FOCUS_MAP) {
 		super(map, focusMap);
 	}
 }
-export default Space;
+export default Ocean;

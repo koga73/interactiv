@@ -10,9 +10,10 @@ import Window from "./components/window.js";
 import Text from "./components/text.js";
 import Input from "./components/input.js";
 import Button from "./components/button.js";
+import List from "./components/list.js";
 
 import Theme from "./core/theme.js";
-import {Space as ThemeSpace, XTree as ThemeXTree} from "./themes/index.js";
+import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit} from "./themes/index.js";
 
 import RenderLog from "./core/render-log.js";
 
@@ -133,9 +134,6 @@ class _class {
 			_class._focus.onBlur();
 		}
 		RenderLog.log(`'${component.id}' - focus`);
-		if (component.isRendered()) {
-			component.onFocus();
-		}
 		_class._focus = component;
 	}
 
@@ -225,8 +223,10 @@ class _class {
 export default _class;
 export {ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
-export {Screen, Window, Text, Input, Button};
+export {Screen, Window, Text, Input, Button, List};
 
 Theme.Space = new ThemeSpace();
 Theme.XTree = new ThemeXTree();
-export {Theme, ThemeSpace, ThemeXTree};
+Theme.Ocean = new ThemeOcean();
+Theme.LavaBit = new ThemeLavaBit();
+export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit};

@@ -5,24 +5,25 @@ import {ORIGIN} from "../core/constants.js";
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Window extends Component {
+	static NAME = "Window";
+
 	static DEFAULT_POSITION = new Position({
 		originX: ORIGIN.X.CENTER,
 		originY: ORIGIN.Y.CENTER,
 		width: "50%",
 		height: "50%"
 	});
+	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Window.NAME];
 
-	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP.window;
-
-	constructor({id = "", label = "", children = [], position = null, style = null, userClosable = false, onSelect = null}) {
+	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onSelect = null}) {
 		super({
 			id,
 			label,
 			focusable: false,
-			focusTrap: true,
+			focusTrap,
 			children,
-			position: position ? position : Window.DEFAULT_POSITION.clone(),
-			style: style ? style : Window.DEFAULT_STYLE.clone()
+			position: position ? position : Window.DEFAULT_POSITION ? Window.DEFAULT_POSITION.clone() : null,
+			style: style ? style : Window.DEFAULT_STYLE ? Window.DEFAULT_STYLE.clone() : null
 		});
 
 		this.userClosable = userClosable;

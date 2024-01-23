@@ -16,7 +16,8 @@ class Position {
 		paddingRight = 0,
 		paddingBottom = 0,
 		paddingLeft = 0,
-		labelOriginX = null
+		labelOriginX = null,
+		...remaining
 	} = {}) {
 		this.originX = originX;
 		this.originY = originY;
@@ -38,7 +39,14 @@ class Position {
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
 		this.calcDimension = this.calcDimension.bind(this);
-		this.toString = this.toString.bind(this);
+
+		//Add remaining props
+		for (const prop in remaining) {
+			if (prop[0] === "_" || typeof remaining[prop] === "function") {
+				continue;
+			}
+			this[prop] = remaining[prop];
+		}
 	}
 
 	clone() {
@@ -121,11 +129,6 @@ class Position {
 			}
 		}
 		return size;
-	}
-
-	toString() {
-		const {originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX} = this;
-		return {originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX};
 	}
 }
 export default Position;

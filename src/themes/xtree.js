@@ -5,28 +5,43 @@ import {BORDER, COLORS} from "../core/constants.js";
 
 class XTree extends Theme {
 	static DEFAULT_MAP = {
-		screen: new Style({
+		Screen: new Style({
 			backgroundColor: COLORS.BG.BLUE,
 			color: COLORS.FG.WHITE_BRIGHT
 		}),
-		window: new Style({
+		Window: new Style({
+			border: BORDER.DOUBLE,
+			borderColor: COLORS.FG.CYAN_BRIGHT,
+			labelColor: COLORS.FG.CYAN_BRIGHT
+		}),
+		Text: new Style(),
+		Input: new Style({
 			border: BORDER.SINGLE,
 			borderColor: COLORS.FG.CYAN_BRIGHT,
 			labelColor: COLORS.FG.CYAN_BRIGHT
 		}),
-		text: new Style(),
-		input: new Style({
-			border: BORDER.SINGLE,
-			borderColor: COLORS.FG.CYAN_BRIGHT,
-			labelColor: COLORS.FG.CYAN_BRIGHT
-		}),
-		button: new Style({
+		Button: new Style({
 			border: BORDER.SINGLE
+		}),
+		List: new Style({
+			border: BORDER.SINGLE,
+			borderColor: COLORS.FG.CYAN_BRIGHT,
+			labelColor: COLORS.FG.CYAN_BRIGHT,
+			selectedBackgroundColor: COLORS.BG.WHITE_BRIGHT,
+			selectedColor: COLORS.FG.BLUE
 		})
 	};
 
-	constructor(map = XTree.DEFAULT_MAP) {
-		super(map);
+	static DEFAULT_FOCUS_MAP = {
+		Button: new Style({
+			border: BORDER.SINGLE,
+			backgroundColor: COLORS.BG.WHITE_BRIGHT,
+			color: COLORS.FG.BLUE
+		})
+	};
+
+	constructor(map = XTree.DEFAULT_MAP, focusMap = XTree.DEFAULT_FOCUS_MAP) {
+		super(map, focusMap);
 	}
 }
 export default XTree;

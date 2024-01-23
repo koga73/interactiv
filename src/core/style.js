@@ -9,7 +9,9 @@ class Style {
 		borderColor = null,
 		//Label
 		labelBackgroundColor = null,
-		labelColor = null
+		labelColor = null,
+		underline = false,
+		...remaining
 	} = {}) {
 		this.backgroundColor = backgroundColor;
 		this.color = color;
@@ -18,6 +20,7 @@ class Style {
 		this.borderColor = borderColor;
 		this.labelBackgroundColor = labelBackgroundColor;
 		this.labelColor = labelColor;
+		this.underline = underline;
 
 		//Place to store extended prop values so they don't get overwritten by theme
 		this._extended = {};
@@ -26,6 +29,14 @@ class Style {
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
 		this.toString = this.toString.bind(this);
+
+		//Add remaining props
+		for (const prop in remaining) {
+			if (prop[0] === "_" || typeof remaining[prop] === "function") {
+				continue;
+			}
+			this[prop] = remaining[prop];
+		}
 	}
 
 	clone() {
@@ -36,8 +47,11 @@ class Style {
 
 	extend(fromStyle, soft = false) {
 		const style = this.clone();
-		const props = ["backgroundColor", "color", "border", "borderBackgroundColor", "borderColor", "labelBackgroundColor", "labelColor"];
-		for (const prop of props) {
+		for (const prop in fromStyle) {
+			//Skip properies starting with underscore and functions
+			if (prop[0] === "_" || typeof fromStyle[prop] === "function") {
+				continue;
+			}
 			if (soft) {
 				style[prop] = style._extended[prop] ?? fromStyle[prop];
 			} else {
