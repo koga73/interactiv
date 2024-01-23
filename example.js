@@ -1,5 +1,5 @@
 import Interactiv, {Position, Style, ORIGIN, BORDER, COLORS, Theme} from "./src/interactiv.js";
-import {Screen, Window, Text, Input, Button, List} from "./src/interactiv.js";
+import {Screen, Window, Text, Input, Button, List, ScrollBar} from "./src/interactiv.js";
 
 const windowText1 = new Text({
 	id: "windowText1",
@@ -65,12 +65,30 @@ const statusBar = new Text({
 	}),
 	value: "Status Bar 100%"
 });
+const sbText = new Text({
+	id: "sbText",
+	value: new Array(30)
+		.fill(1)
+		.map((_, i) => `Line ${i + 1}`)
+		.join("\n")
+});
+const sb = new ScrollBar({
+	id: "sb",
+	position: ScrollBar.DEFAULT_POSITION.extend({
+		marginTop: 1,
+		marginLeft: 2,
+		width: "50%",
+		height: "10"
+	}),
+	children: [sbText]
+});
 const list = new List({
 	id: "list",
 	items: ["Space", "XTree", "Ocean", "LavaBit"],
 	selectedIndex: 0,
 	position: List.DEFAULT_POSITION.extend({
 		marginLeft: 2,
+		marginBottom: 1,
 		paddingTop: 1,
 		paddingRight: 2,
 		paddingBottom: 1,
@@ -99,7 +117,7 @@ const screen = new Screen({
 		border: BORDER.DOUBLE
 	}),
 	label: " My Application ",
-	children: [statusBar, input3, list, window],
+	children: [statusBar, input3, list, sb, window],
 	onSelect: () => {
 		Interactiv.destroy();
 		console.log("Back to the terminal.");

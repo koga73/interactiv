@@ -49,12 +49,11 @@ class Input extends Component {
 	}
 
 	clone() {
-		const {id, label, _children: children, focusable, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
+		const {id, label, _children: children, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
 		return new Input({
 			id,
 			label,
 			children,
-			focusable,
 			focusTrap,
 			focusStyle: focusStyle ? focusStyle.clone() : null,
 			position: position.clone(),
@@ -67,7 +66,7 @@ class Input extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
 		if (this.position.height <= 0) {
 			const hasBorder = this._computedStyle.border !== null;
 			if (hasBorder) {
@@ -76,7 +75,7 @@ class Input extends Component {
 				overrides.height = 1;
 			}
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {

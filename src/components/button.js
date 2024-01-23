@@ -52,7 +52,7 @@ class Button extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
 		const {position, value, _computedStyle} = this;
 		if (position.width <= 0) {
 			overrides.width = value.length + position.paddingLeft + position.paddingRight;
@@ -65,7 +65,7 @@ class Button extends Component {
 			overrides.width += 2;
 			overrides.height += 2;
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {

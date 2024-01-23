@@ -23,6 +23,13 @@ class Space extends Theme {
 			border: BORDER.SINGLE,
 			selectedBackgroundColor: COLORS.BG.WHITE,
 			selectedColor: COLORS.FG.BLACK
+		}),
+		ScrollBar: new Style({
+			border: BORDER.SINGLE,
+			trackCharacter: "▒",
+			trackColor: COLORS.FG.WHITE,
+			thumbCharacter: "▓",
+			thumbColor: COLORS.FG.WHITE
 		})
 	};
 

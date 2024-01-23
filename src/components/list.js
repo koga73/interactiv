@@ -70,7 +70,7 @@ class List extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
 		const {position, items, _computedStyle} = this;
 		const hasBorder = _computedStyle.border !== null;
 
@@ -87,7 +87,7 @@ class List extends Component {
 				overrides.height += 2;
 			}
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {

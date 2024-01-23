@@ -44,7 +44,7 @@ class Text extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
 		const parentHasBorder = parentDetails.parentComputedStyle ? parentDetails.parentComputedStyle.border !== null : false;
 		const width = this.position.calcDimension(
 			this.position.width,
@@ -63,7 +63,7 @@ class Text extends Component {
 				overrides.height = this._lines.length;
 			}
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {
@@ -93,19 +93,27 @@ class Text extends Component {
 
 	//Separate text into multiple lines
 	wordWrap(text, charsPerLine) {
-		const lines = [];
-		let line = "";
-		const words = text.split(" ");
-		for (let i = 0; i < words.length; i++) {
-			if (line.length + words[i].length > charsPerLine) {
-				lines.push(line.trim());
-				line = words[i] + " ";
+		return text.split("\n").reduce((lines, line) => {
+			line = line.trim();
+			if (line.length <= charsPerLine) {
+				lines.push(line);
 			} else {
-				line += words[i] + " ";
+				let newLine = "";
+				const words = line.replace(/\s+/g, " ").split(" ");
+				const wordsLen = words.length;
+				for (let i = 0; i < wordsLen; i++) {
+					const word = words[i];
+					if (newLine.length + word.length > charsPerLine) {
+						lines.push(newLine);
+						newLine = word + " ";
+					} else {
+						newLine += word + " ";
+					}
+				}
+				lines.push(newLine.slice(0, -1));
 			}
-		}
-		lines.push(line.trim());
-		return lines;
+			return lines;
+		}, []);
 	}
 }
 export default Text;
