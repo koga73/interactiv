@@ -48,13 +48,7 @@ class Text extends Component {
 		if (!this._needsRender) {
 			return;
 		}
-		const parentHasBorder = parentDetails.parentComputedStyle ? parentDetails.parentComputedStyle.border !== null : false;
-		const width = this.position.calcDimension(
-			this.position.width,
-			parentDetails.parentComputedPosition.width,
-			this.position.marginLeft + this.position.marginRight,
-			parentHasBorder
-		);
+		const width = this.position.calcDimension(this.position.width, parentDetails.parentComputedPosition.innerWidth, this.position.marginLeft + this.position.marginRight);
 		this._lines = this.wordWrap(this.value, width);
 		overrides.width = width;
 
@@ -70,9 +64,9 @@ class Text extends Component {
 	}
 
 	drawSelf() {
-		const {x, y, scrollY, scrollHeight} = this._computedPosition;
-		const {border, backgroundColor, color, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {innerX: x} = this._computedPosition;
+		const {y, height, contentY} = this._computedPosition.getScrollContentRange();
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -83,15 +77,9 @@ class Text extends Component {
 		stdout.write(color);
 
 		const lines = this._lines;
-		const linesLen = lines.length;
-		const drawHeight = scrollHeight > 0 ? Math.min(linesLen, scrollHeight) : linesLen;
-		for (let i = scrollY; i < drawHeight + scrollY; i++) {
-			if (hasBorder) {
-				stdout.cursorTo(x + 1, y + 1 + i - scrollY);
-			} else {
-				stdout.cursorTo(x, y + i - scrollY);
-			}
-			stdout.write(lines[i]);
+		for (let i = 0; i < height; i++) {
+			stdout.cursorTo(x, y + i);
+			stdout.write(lines[i + contentY]);
 		}
 	}
 

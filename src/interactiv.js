@@ -24,6 +24,7 @@ class _class {
 	static _focus = null;
 	static _autoUpdateInterval = 0;
 	static _timer = null;
+	static _parentComputedPosition = new Position();
 
 	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE} = {}) {
 		if (autoUpdate) {
@@ -65,6 +66,9 @@ class _class {
 
 	static getWindowSize() {
 		const [cols, rows] = process.stdout.getWindowSize();
+		if (_class._parentComputedPosition.width !== cols || _class._parentComputedPosition.height !== rows) {
+			_class._parentComputedPosition = new Position({width: cols, height: rows});
+		}
 		return {cols, rows};
 	}
 
@@ -81,13 +85,12 @@ class _class {
 		if (_class.paused) {
 			return;
 		}
-		const {cols, rows} = _class.getWindowSize();
+
+		//Compute sizes and positions
+		_class.getWindowSize();
 		screen.compute(
 			{
-				parentComputedPosition: new Position({
-					width: cols,
-					height: rows
-				})
+				parentComputedPosition: _class._parentComputedPosition
 			},
 			{force, delta, debug: _class.debug}
 		);

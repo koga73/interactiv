@@ -28,7 +28,6 @@ class ScrollBar extends Component {
 		this.scrollPosition = scrollPosition;
 
 		this._childrenHeight = 0;
-		this._innerHeight = 0;
 		this._scrollStep = 0;
 		this._reactiveProps = [...this._reactiveProps, "scrollPosition"];
 	}
@@ -51,49 +50,41 @@ class ScrollBar extends Component {
 		if (!this._needsRender) {
 			return;
 		}
+		const {_computedPosition, scrollPosition} = this;
 
-		const {_computedStyle, _computedPosition, scrollPosition} = this;
-		const hasBorder = _computedStyle.border !== null;
-
-		const {height} = _computedPosition;
-		this._innerHeight = hasBorder ? height - 2 : height;
+		const {innerHeight: height} = _computedPosition;
 		this._childrenHeight = this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
 
-		const needsScroll = this._childrenHeight > this._innerHeight;
+		const needsScroll = this._childrenHeight > height;
 		if (needsScroll) {
-			this._scrollStep = 1 / (this._childrenHeight - this._innerHeight);
+			this._scrollStep = 1 / (this._childrenHeight - height);
 		} else {
 			this._scrollStep = 0;
 		}
 		this._children.forEach((child) => {
-			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (this._childrenHeight - this._innerHeight)) : 0;
-			child._computedPosition.scrollHeight = needsScroll ? this._innerHeight : 0;
+			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (this._childrenHeight - height)) : 0;
+			child._computedPosition.scrollHeight = needsScroll ? height : 0;
 		});
 	}
 
 	drawSelf() {
-		const {scrollPosition, _computedPosition, _computedStyle, _innerHeight} = this;
-		const {x, y, width} = _computedPosition;
-		const {border, trackCharacter, trackColor, thumbCharacter, thumbColor} = _computedStyle;
-		const hasBorder = border !== null;
+		const {scrollPosition, _computedPosition, _computedStyle} = this;
+		const {innerX: x, innerY: y, innerWidth: width, innerHeight: height} = _computedPosition;
+		const {trackCharacter, trackColor, thumbCharacter, thumbColor} = _computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
 		stdout.write(trackColor);
 
 		const cursorStart = [x + width, y];
-		if (hasBorder) {
-			cursorStart[0] -= 1;
-			cursorStart[1] += 1;
-		}
-		let thumbY = Math.floor((_innerHeight - 1) * scrollPosition);
+		let thumbY = Math.floor((height - 1) * scrollPosition);
 		//Enure that thumb is not at top or bottom unless we are at 0 or 1
 		if (thumbY === 0 && scrollPosition > 0) {
 			thumbY = 1;
-		} else if (thumbY === _innerHeight - 1 && scrollPosition < 1) {
-			thumbY = _innerHeight - 2;
+		} else if (thumbY === height - 1 && scrollPosition < 1) {
+			thumbY = height - 2;
 		}
-		for (let i = 0; i < _innerHeight; i++) {
+		for (let i = 0; i < height; i++) {
 			let character = trackCharacter;
 			switch (i) {
 				case thumbY:

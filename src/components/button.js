@@ -72,9 +72,8 @@ class Button extends Component {
 	}
 
 	drawSelf() {
-		const {x, y, paddingTop, paddingLeft} = this._computedPosition;
-		const {backgroundColor, color, border, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {innerX: x, innerY: y} = this._computedPosition;
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -84,11 +83,7 @@ class Button extends Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		const cursorStart = [x + paddingLeft, y + paddingTop];
-		if (hasBorder) {
-			cursorStart[0] += 1;
-			cursorStart[1] += 1;
-		}
+		const cursorStart = [x, y];
 		stdout.cursorTo(cursorStart[0], cursorStart[1]);
 		stdout.write(this.value);
 		stdout.cursorTo(cursorStart[0], cursorStart[1]);

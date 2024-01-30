@@ -41,8 +41,8 @@ class Component {
 
 		this._children = [];
 		this._parent = null;
-		this._computedPosition = null;
-		this._computedStyle = null;
+		this._computedPosition = new Position();
+		this._computedStyle = new Style();
 		this._focused = false;
 		this._needsRender = false;
 		this._reactiveProps = ["label", "focusable", "position", "style", "focusStyle", "_children", "_focused"];
@@ -74,6 +74,9 @@ class Component {
 	}
 
 	compute(params, {force = false, delta = 0, debug = false} = {}) {
+		if (debug && force) {
+			RenderLog.log(`'${this.id}' - force render`);
+		}
 		this._needsRender = force ? true : this.needsRender(false, debug);
 		if (this._needsRender) {
 			this.computeStyle({...params, debug});
@@ -102,41 +105,42 @@ class Component {
 		}
 	}
 
-	computeStyle({parentComputedStyle} = {}) {
+	computeStyle({parentComputedStyle} = {}, overrides = {}) {
 		if (!this._needsRender) {
 			return;
 		}
 		const {style, focusStyle, _focused: focused} = this;
 		const styleToCompute = focused ? focusStyle || style : style;
-		this._computedStyle = styleToCompute.compute(parentComputedStyle);
+		styleToCompute.compute(parentComputedStyle, {intoStyle: this._computedStyle}, overrides);
 	}
 
-	computePosition({parentComputedPosition, parentComputedStyle, previousChildPosition}, overrides = {}) {
+	computePosition({parentComputedPosition, previousChildPosition}, overrides = {}) {
 		if (!this._needsRender) {
 			return;
 		}
-		const {position} = this;
-		this._computedPosition = position.compute(
+		overrides.borderSize = this._computedStyle.border ? 1 : 0;
+
+		this.position.compute(
 			parentComputedPosition,
 			{
-				parentHasBorder: parentComputedStyle ? parentComputedStyle.border !== null : false,
+				intoPosition: this._computedPosition,
 				previousChildPosition
 			},
 			overrides
 		);
 	}
 
-	render(parent, options) {
+	render(parent) {
 		this._parent = parent;
 
 		const {_needsRender: needsRender} = this;
 		if (needsRender) {
-			this.drawBackground(options);
-			this.drawBorder(options);
-			this.drawLabel(options);
-			this.drawSelf(options);
+			this.drawBackground();
+			this.drawBorder();
+			this.drawLabel();
+			this.drawSelf();
 		}
-		const didRender = this.renderChildren(options);
+		const didRender = this.renderChildren();
 		if (needsRender) {
 			this._storeLastState();
 		}
@@ -245,12 +249,12 @@ class Component {
 	}
 
 	drawSelf() {
-		const {x, y} = this._computedPosition;
+		const {innerX: x, innerY: y} = this._computedPosition;
 		const {stdout} = process;
 		stdout.cursorTo(x, y);
 	}
 
-	renderChildren(options) {
+	renderChildren() {
 		let didRender = false;
 		const {_children: children} = this;
 		if (!children) {
@@ -260,16 +264,16 @@ class Component {
 		for (let i = 0; i < childrenLen; i++) {
 			const child = children[i];
 			if (child instanceof Component) {
-				didRender |= child.render(this, options);
+				didRender |= child.render(this);
 			} else {
-				this.drawString(child, options);
+				this.drawString(child);
 			}
 		}
 		return didRender;
 	}
 
 	drawString(str) {
-		const {x, y} = this._computedPosition;
+		const {innerX: x, innerY: y} = this._computedPosition;
 		const {backgroundColor, color} = this._computedStyle;
 
 		const {stdout} = process;

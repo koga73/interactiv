@@ -95,9 +95,8 @@ class List extends Component {
 
 	drawSelf() {
 		const {items, selectedIndex, activeIndex, _computedPosition, _computedStyle, _longestItem} = this;
-		const {x, y, paddingTop, paddingLeft} = _computedPosition;
-		const {border, backgroundColor, color, selectedBackgroundColor, selectedColor} = _computedStyle;
-		const hasBorder = border !== null;
+		const {innerX: x, innerY: y} = _computedPosition;
+		const {backgroundColor, color, selectedBackgroundColor, selectedColor} = _computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -126,21 +125,13 @@ class List extends Component {
 					break;
 			}
 
-			if (hasBorder) {
-				stdout.cursorTo(x + 1 + paddingLeft, y + 1 + i + paddingTop);
-			} else {
-				stdout.cursorTo(x + paddingLeft, y + i + paddingTop);
-			}
+			stdout.cursorTo(x, y + i);
 			const remainingLen = _longestItem - items[i].length;
 			stdout.write(items[i] + " ".repeat(remainingLen));
 		}
 
 		//Move cursor to active
-		if (hasBorder) {
-			stdout.cursorTo(x + 1 + paddingLeft, y + 1 + activeIndex + paddingTop);
-		} else {
-			stdout.cursorTo(x + paddingLeft, y + activeIndex + paddingTop);
-		}
+		stdout.cursorTo(x, y + activeIndex);
 	}
 
 	gotoPrevious() {

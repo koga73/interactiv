@@ -82,9 +82,8 @@ class Input extends Component {
 	}
 
 	drawSelf() {
-		const {x, y, width} = this._computedPosition;
-		const {border, backgroundColor, color, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {innerX: x, innerY: y, innerWidth: width} = this._computedPosition;
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -94,14 +93,9 @@ class Input extends Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		if (hasBorder) {
-			stdout.cursorTo(x + 1, y + 1);
-		} else {
-			stdout.cursorTo(x, y);
-		}
-		const innerWidth = hasBorder ? width - 2 : width;
+		stdout.cursorTo(x, y);
 		const val = this.mask ? this.mask.repeat(this.value.length) : this.value;
-		stdout.write(val.length > innerWidth ? val.slice(-innerWidth) : val);
+		stdout.write(val.length > width ? val.slice(-width) : val);
 	}
 
 	onKeyPress(str, key) {

@@ -39,9 +39,9 @@ class LavaBit extends Theme {
 			border: BORDER.SINGLE,
 			backgroundColor: COLORS.BG.WHITE,
 			color: COLORS.FG.BLACK,
-			trackCharacter: "▒",
+			trackCharacter: String.fromCharCode(0x2593),
 			trackColor: COLORS.FG.WHITE,
-			thumbCharacter: "▓",
+			thumbCharacter: String.fromCharCode(0x2588),
 			thumbColor: COLORS.FG.BLACK
 		})
 	};

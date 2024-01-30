@@ -34,9 +34,9 @@ class Ocean extends Theme {
 			border: BORDER.SINGLE,
 			borderColor: COLORS.FG.CYAN,
 			labelColor: COLORS.FG.CYAN,
-			trackCharacter: "▒",
+			trackCharacter: String.fromCharCode(0x2593),
 			trackColor: COLORS.FG.CYAN,
-			thumbCharacter: "▓",
+			thumbCharacter: String.fromCharCode(0x2588),
 			thumbColor: COLORS.FG.CYAN
 		})
 	};
