@@ -29,6 +29,15 @@ class Ocean extends Theme {
 			labelColor: COLORS.FG.CYAN_BRIGHT,
 			selectedBackgroundColor: COLORS.BG.CYAN,
 			selectedColor: COLORS.FG.BLACK
+		}),
+		ScrollBar: new Style({
+			border: BORDER.SINGLE,
+			borderColor: COLORS.FG.CYAN,
+			labelColor: COLORS.FG.CYAN,
+			trackCharacter: "▒",
+			trackColor: COLORS.FG.CYAN,
+			thumbCharacter: "▓",
+			thumbColor: COLORS.FG.CYAN
 		})
 	};
 

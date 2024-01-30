@@ -71,6 +71,12 @@ const sbText = new Text({
 		.fill(1)
 		.map((_, i) => `Line ${i + 1}`)
 		.join("\n")
+	/*
+	style: Text.DEFAULT_STYLE.extend({
+		border: BORDER.DOUBLE
+	}),
+	label: " ScrollBar "
+	*/
 });
 const sb = new ScrollBar({
 	id: "sb",
@@ -117,7 +123,7 @@ const screen = new Screen({
 		border: BORDER.DOUBLE
 	}),
 	label: " My Application ",
-	children: [statusBar, input3, list, sb, window],
+	children: [statusBar, input3, list, sb],
 	onSelect: () => {
 		Interactiv.destroy();
 		console.log("Back to the terminal.");

@@ -34,6 +34,15 @@ class LavaBit extends Theme {
 			color: COLORS.FG.BLACK,
 			selectedBackgroundColor: COLORS.BG.BLACK,
 			selectedColor: COLORS.FG.WHITE
+		}),
+		ScrollBar: new Style({
+			border: BORDER.SINGLE,
+			backgroundColor: COLORS.BG.WHITE,
+			color: COLORS.FG.BLACK,
+			trackCharacter: "▒",
+			trackColor: COLORS.FG.WHITE,
+			thumbCharacter: "▓",
+			thumbColor: COLORS.FG.BLACK
 		})
 	};
 

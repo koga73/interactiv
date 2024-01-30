@@ -67,6 +67,9 @@ class Input extends Component {
 	}
 
 	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		if (this.position.height <= 0) {
 			const hasBorder = this._computedStyle.border !== null;
 			if (hasBorder) {

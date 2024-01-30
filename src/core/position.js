@@ -35,17 +35,19 @@ class Position {
 		this.paddingLeft = paddingLeft;
 		this.labelOriginX = labelOriginX;
 
+		this.scrollY = 0;
+		this.scrollHeight = 0;
+
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
 		this.calcDimension = this.calcDimension.bind(this);
 
-		//Add remaining props
+		//Add remaining non-function props
 		for (const prop in remaining) {
-			if (prop[0] === "_" || typeof remaining[prop] === "function") {
-				continue;
+			if (typeof remaining[prop] !== "function") {
+				this[prop] = remaining[prop];
 			}
-			this[prop] = remaining[prop];
 		}
 	}
 
@@ -59,7 +61,7 @@ class Position {
 
 	compute(parentPosition, {parentHasBorder = false, previousChildPosition = null} = {}, overrides = {}) {
 		const {originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX} = Object.assign({}, this, overrides);
-		const computed = this.clone();
+		const computed = this.clone(); //TODO: Reduce clone calls because "new" is slow in our render loop
 
 		computed.labelOriginX = labelOriginX || originX;
 		if (!parentPosition) {

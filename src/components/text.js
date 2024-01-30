@@ -45,6 +45,9 @@ class Text extends Component {
 	}
 
 	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const parentHasBorder = parentDetails.parentComputedStyle ? parentDetails.parentComputedStyle.border !== null : false;
 		const width = this.position.calcDimension(
 			this.position.width,
@@ -67,7 +70,7 @@ class Text extends Component {
 	}
 
 	drawSelf() {
-		const {x, y} = this._computedPosition;
+		const {x, y, scrollY, scrollHeight} = this._computedPosition;
 		const {border, backgroundColor, color, underline} = this._computedStyle;
 		const hasBorder = border !== null;
 
@@ -81,11 +84,12 @@ class Text extends Component {
 
 		const lines = this._lines;
 		const linesLen = lines.length;
-		for (let i = 0; i < linesLen; i++) {
+		const drawHeight = scrollHeight > 0 ? Math.min(linesLen, scrollHeight) : linesLen;
+		for (let i = scrollY; i < drawHeight + scrollY; i++) {
 			if (hasBorder) {
-				stdout.cursorTo(x + 1, y + 1 + i);
+				stdout.cursorTo(x + 1, y + 1 + i - scrollY);
 			} else {
-				stdout.cursorTo(x, y + i);
+				stdout.cursorTo(x, y + i - scrollY);
 			}
 			stdout.write(lines[i]);
 		}

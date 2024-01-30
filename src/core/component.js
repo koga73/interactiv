@@ -94,7 +94,7 @@ class Component {
 							parentComputedStyle: this._computedStyle,
 							previousChildPosition: prevChildPos
 						},
-						{force, delta, debug}
+						{force: force | this._needsRender, delta, debug}
 					);
 					prevChildPos = child._computedPosition;
 				}
@@ -103,12 +103,18 @@ class Component {
 	}
 
 	computeStyle({parentComputedStyle} = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const {style, focusStyle, _focused: focused} = this;
 		const styleToCompute = focused ? focusStyle || style : style;
 		this._computedStyle = styleToCompute.compute(parentComputedStyle);
 	}
 
 	computePosition({parentComputedPosition, parentComputedStyle, previousChildPosition}, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const {position} = this;
 		this._computedPosition = position.compute(
 			parentComputedPosition,
@@ -120,17 +126,17 @@ class Component {
 		);
 	}
 
-	render(parent) {
+	render(parent, options) {
 		this._parent = parent;
 
 		const {_needsRender: needsRender} = this;
 		if (needsRender) {
-			this.drawBackground();
-			this.drawBorder();
-			this.drawLabel();
-			this.drawSelf();
+			this.drawBackground(options);
+			this.drawBorder(options);
+			this.drawLabel(options);
+			this.drawSelf(options);
 		}
-		const didRender = this.renderChildren();
+		const didRender = this.renderChildren(options);
 		if (needsRender) {
 			this._storeLastState();
 		}
@@ -140,7 +146,7 @@ class Component {
 
 	drawBackground() {
 		const {id, _computedPosition, _computedStyle} = this;
-		const {x, y, width, height} = _computedPosition;
+		const {x, y, width, height, scrollY, scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBackground - width: ${width}`);
 		}
@@ -154,8 +160,9 @@ class Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		for (let i = 0; i < height; i++) {
-			stdout.cursorTo(x, y + i);
+		const drawHeight = scrollHeight > 0 ? Math.min(height, scrollHeight) : height;
+		for (let i = scrollY; i < drawHeight + scrollY; i++) {
+			stdout.cursorTo(x, y + i - scrollY);
 			stdout.write(" ".repeat(width));
 		}
 	}
@@ -165,7 +172,7 @@ class Component {
 		if (!_computedStyle.border) {
 			return;
 		}
-		const {x, y, width, height} = _computedPosition;
+		const {x, y, width, height, scrollY, scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBorder - width: ${width}`);
 		}
@@ -179,20 +186,27 @@ class Component {
 		stdout.write(borderBackgroundColor);
 		stdout.write(borderColor);
 
-		stdout.cursorTo(x, y);
-		stdout.write(border.topLeft);
-		stdout.write(border.horizontal.repeat(width - 2));
-		stdout.write(border.topRight);
-		for (let i = 1; i < height - 1; i++) {
-			stdout.cursorTo(x, y + i);
+		const drawHeight = scrollHeight > 0 ? Math.min(height, scrollHeight) : height;
+		const topVisible = scrollY === 0;
+		const bottomVisible = scrollHeight === 0 || scrollY + scrollHeight === height;
+		if (topVisible) {
+			stdout.cursorTo(x, y);
+			stdout.write(border.topLeft);
+			stdout.write(border.horizontal.repeat(width - 2));
+			stdout.write(border.topRight);
+		}
+		for (let i = topVisible ? scrollY + 1 : scrollY; i < scrollY + drawHeight; i++) {
+			stdout.cursorTo(x, y + i - scrollY);
 			stdout.write(border.vertical);
-			stdout.cursorTo(x + width - 1, y + i);
+			stdout.cursorTo(x + width - 1, y + i - scrollY);
 			stdout.write(border.vertical);
 		}
-		stdout.cursorTo(x, y + height - 1);
-		stdout.write(border.bottomLeft);
-		stdout.write(border.horizontal.repeat(width - 2));
-		stdout.write(border.bottomRight);
+		if (bottomVisible) {
+			stdout.cursorTo(x, y + drawHeight - 1);
+			stdout.write(border.bottomLeft);
+			stdout.write(border.horizontal.repeat(width - 2));
+			stdout.write(border.bottomRight);
+		}
 	}
 
 	drawLabel() {
@@ -204,8 +218,12 @@ class Component {
 		if (!labelWidth) {
 			return;
 		}
-		const {x, y, width, labelOriginX} = _computedPosition;
+		const {x, y, width, labelOriginX, scrollY} = _computedPosition;
 		const {labelBackgroundColor, labelColor} = _computedStyle;
+		const topVisible = scrollY === 0;
+		if (!topVisible) {
+			return;
+		}
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -232,7 +250,7 @@ class Component {
 		stdout.cursorTo(x, y);
 	}
 
-	renderChildren() {
+	renderChildren(options) {
 		let didRender = false;
 		const {_children: children} = this;
 		if (!children) {
@@ -242,9 +260,9 @@ class Component {
 		for (let i = 0; i < childrenLen; i++) {
 			const child = children[i];
 			if (child instanceof Component) {
-				didRender |= child.render(this);
+				didRender |= child.render(this, options);
 			} else {
-				this.drawString(child);
+				this.drawString(child, options);
 			}
 		}
 		return didRender;

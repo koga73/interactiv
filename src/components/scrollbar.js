@@ -46,16 +46,29 @@ class ScrollBar extends Component {
 		});
 	}
 
-	computePosition(parentDetails, overrides) {
-		const {_computedStyle} = this;
+	compute(params, options) {
+		super.compute(params, options);
+		if (!this._needsRender) {
+			return;
+		}
+
+		const {_computedStyle, _computedPosition, scrollPosition} = this;
 		const hasBorder = _computedStyle.border !== null;
 
-		super.computePosition(parentDetails, overrides);
-		const {height} = this._computedPosition;
-
-		this._childrenHeight = 10; //this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
+		const {height} = _computedPosition;
 		this._innerHeight = hasBorder ? height - 2 : height;
-		this._scrollStep = 1 / (this._childrenHeight - this._innerHeight);
+		this._childrenHeight = this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
+
+		const needsScroll = this._childrenHeight > this._innerHeight;
+		if (needsScroll) {
+			this._scrollStep = 1 / (this._childrenHeight - this._innerHeight);
+		} else {
+			this._scrollStep = 0;
+		}
+		this._children.forEach((child) => {
+			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (this._childrenHeight - this._innerHeight)) : 0;
+			child._computedPosition.scrollHeight = needsScroll ? this._innerHeight : 0;
+		});
 	}
 
 	drawSelf() {
@@ -68,12 +81,18 @@ class ScrollBar extends Component {
 		stdout.write(CURSOR.RESET);
 		stdout.write(trackColor);
 
-		const cursorStart = [x + width - 1, y];
+		const cursorStart = [x + width, y];
 		if (hasBorder) {
 			cursorStart[0] -= 1;
 			cursorStart[1] += 1;
 		}
-		const thumbY = Math.floor((_innerHeight - 1) * scrollPosition);
+		let thumbY = Math.floor((_innerHeight - 1) * scrollPosition);
+		//Enure that thumb is not at top or bottom unless we are at 0 or 1
+		if (thumbY === 0 && scrollPosition > 0) {
+			thumbY = 1;
+		} else if (thumbY === _innerHeight - 1 && scrollPosition < 1) {
+			thumbY = _innerHeight - 2;
+		}
 		for (let i = 0; i < _innerHeight; i++) {
 			let character = trackCharacter;
 			switch (i) {
@@ -91,10 +110,9 @@ class ScrollBar extends Component {
 			stdout.cursorTo(cursorStart[0], cursorStart[1] + i);
 			stdout.write(character);
 		}
-	}
 
-	renderChildren(needsRender, details) {
-		super.renderChildren(needsRender, details);
+		//Focus on thumb
+		stdout.cursorTo(cursorStart[0], cursorStart[1] + thumbY);
 	}
 
 	onKeyPress(str, key) {

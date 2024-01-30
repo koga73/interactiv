@@ -71,6 +71,9 @@ class List extends Component {
 	}
 
 	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const {position, items, _computedStyle} = this;
 		const hasBorder = _computedStyle.border !== null;
 

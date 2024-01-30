@@ -53,6 +53,9 @@ class Button extends Component {
 	}
 
 	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const {position, value, _computedStyle} = this;
 		if (position.width <= 0) {
 			overrides.width = value.length + position.paddingLeft + position.paddingRight;
