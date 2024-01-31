@@ -26,7 +26,7 @@ class Space extends Theme {
 		}),
 		ScrollBar: new Style({
 			border: BORDER.SINGLE,
-			trackCharacter: String.fromCharCode(0x2593),
+			trackCharacter: String.fromCharCode(0x2592),
 			trackColor: COLORS.FG.WHITE,
 			thumbCharacter: String.fromCharCode(0x2588),
 			thumbColor: COLORS.FG.WHITE

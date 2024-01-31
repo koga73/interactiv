@@ -34,7 +34,7 @@ class XTree extends Theme {
 			border: BORDER.SINGLE,
 			borderColor: COLORS.FG.CYAN_BRIGHT,
 			labelColor: COLORS.FG.CYAN_BRIGHT,
-			trackCharacter: String.fromCharCode(0x2593),
+			trackCharacter: String.fromCharCode(0x2592),
 			trackColor: COLORS.FG.CYAN_BRIGHT,
 			thumbCharacter: String.fromCharCode(0x2588),
 			thumbColor: COLORS.FG.CYAN_BRIGHT

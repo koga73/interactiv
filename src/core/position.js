@@ -169,13 +169,14 @@ class Position {
 	}
 
 	getScrollContentRange() {
-		const {y, innerY, height, innerHeight, scrollY, scrollHeight} = this;
+		const {y, innerY, innerHeight, scrollY, scrollHeight} = this;
 		const contentY = innerY - y - scrollY;
+		const contentBottom = contentY + innerHeight;
+		const newY = Math.max(y + contentY, y);
 		return {
-			y: Math.max(y + contentY, y),
-			contentY: Math.max(-contentY, 0),
-			//TODO: This is a temporary fix for the scrollHeight being too large, it should be calculated based on the content
-			height: scrollHeight > 0 ? Math.min(scrollHeight - Math.floor((height - innerHeight) * 0.5), innerHeight) : innerHeight
+			y: newY,
+			height: scrollHeight > 0 ? Math.min(scrollHeight - (newY - y), contentBottom, innerHeight) : innerHeight,
+			contentY: Math.max(-contentY, 0)
 		};
 	}
 
