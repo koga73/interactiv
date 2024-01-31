@@ -105,7 +105,8 @@ class List extends Component {
 		stdout.write(color);
 
 		for (let i = 0; i < height; i++) {
-			switch (i) {
+			const itemIndex = contentY + i;
+			switch (itemIndex) {
 				case selectedIndex:
 					stdout.write(CURSOR.RESET);
 					stdout.write(selectedBackgroundColor);
@@ -126,12 +127,13 @@ class List extends Component {
 			}
 
 			stdout.cursorTo(x, y + i);
-			const remainingLen = _longestItem - items[contentY + i].length;
-			stdout.write(items[contentY + i] + " ".repeat(remainingLen));
+			const item = items[itemIndex];
+			const remainingLen = _longestItem - item.length;
+			stdout.write(item + " ".repeat(remainingLen));
 		}
 
 		//Move cursor to active
-		stdout.cursorTo(x, y + activeIndex);
+		stdout.cursorTo(x, y + (activeIndex - contentY));
 	}
 
 	gotoPrevious() {
@@ -143,9 +145,9 @@ class List extends Component {
 	}
 
 	gotoIndex(index) {
-		const newDownIndex = Math.max(0, Math.min(this.items.length - 1, index));
-		if (newDownIndex !== this.activeIndex) {
-			this.activeIndex = newDownIndex;
+		const newIndex = Math.max(0, Math.min(this.items.length - 1, index));
+		if (newIndex !== this.activeIndex) {
+			this.activeIndex = newIndex;
 			if (this.onChange) {
 				this.onChange({
 					activeIndex: this.activeIndex,
@@ -172,15 +174,15 @@ class List extends Component {
 		switch (key.name) {
 			case "up":
 				this.gotoPrevious();
-				/*if (this._parent) {
+				if (this._parent) {
 					this._parent.onKeyPress(str, key);
-				}*/
+				}
 				break;
 			case "down":
 				this.gotoNext();
-				/*if (this._parent) {
+				if (this._parent) {
 					this._parent.onKeyPress(str, key);
-				}*/
+				}
 				break;
 			case "return":
 				this._selectIndex(this.activeIndex);

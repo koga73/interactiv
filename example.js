@@ -65,15 +65,24 @@ const statusBar = new Text({
 	}),
 	value: "Status Bar 100%"
 });
-const sbText = new Text({
-	id: "sbText",
-	value: new Array(30)
-		.fill(1)
-		.map((_, i) => `Line ${i + 1}`)
-		.join("\n")
+const sbContent = new List({
+	id: "sbContent",
+	items: new Array(30).fill(1).map((_, i) => `Line ${i + 1}`),
+	selectedIndex: 0,
+	position: List.DEFAULT_POSITION.extend({
+		marginLeft: 2,
+		marginBottom: 1,
+		paddingTop: 1,
+		paddingRight: 2,
+		paddingBottom: 1,
+		paddingLeft: 2
+	}),
+	autoSelect: true,
+	onSelect: ({selectedItem}) => {}
 });
 const sb = new ScrollBar({
 	id: "sb",
+	focusable: false,
 	position: ScrollBar.DEFAULT_POSITION.extend({
 		marginTop: 1,
 		marginBottom: 1,
@@ -82,7 +91,7 @@ const sb = new ScrollBar({
 		height: "10"
 	}),
 	label: " Text Scroller ",
-	children: [sbText]
+	children: [sbContent]
 });
 const list = new List({
 	id: "list",

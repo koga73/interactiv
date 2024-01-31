@@ -27,7 +27,6 @@ class ScrollBar extends Component {
 
 		this.scrollPosition = scrollPosition;
 
-		this._childrenHeight = 0;
 		this._scrollStep = 0;
 		this._reactiveProps = [...this._reactiveProps, "scrollPosition"];
 	}
@@ -54,16 +53,16 @@ class ScrollBar extends Component {
 		const {_computedPosition, scrollPosition} = this;
 
 		const {innerHeight: height} = _computedPosition;
-		this._childrenHeight = this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
+		const childrenHeight = this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
 
-		const needsScroll = this._childrenHeight > height;
+		const needsScroll = childrenHeight > height;
 		if (needsScroll) {
-			this._scrollStep = 1 / (this._childrenHeight - height);
+			this._scrollStep = 1 / (childrenHeight - height);
 		} else {
 			this._scrollStep = 0;
 		}
 		this._children.forEach((child) => {
-			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (this._childrenHeight - height)) : 0;
+			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (childrenHeight - height)) : 0;
 			child._computedPosition.scrollHeight = needsScroll ? height : 0;
 		});
 	}
