@@ -8,7 +8,7 @@ import Component from "./core/component.js";
 import {Button, Input, List, Screen, ScrollBar, Text, Window} from "./components/index.js";
 
 import Theme from "./core/theme.js";
-import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit} from "./themes/index.js";
+import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit, Marble as ThemeMarble} from "./themes/index.js";
 
 import RenderLog from "./core/render-log.js";
 import NormalTimer from "./utils/normal-timer.js";
@@ -237,4 +237,5 @@ Theme.Space = new ThemeSpace();
 Theme.XTree = new ThemeXTree();
 Theme.Ocean = new ThemeOcean();
 Theme.LavaBit = new ThemeLavaBit();
-export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit};
+Theme.Marble = new ThemeMarble();
+export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit, ThemeMarble};

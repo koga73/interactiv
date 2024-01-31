@@ -34,7 +34,7 @@ const btn = new Button({
 	id: "btn",
 	value: "Submit",
 	position: Button.DEFAULT_POSITION.extend({
-		marginRight: 3,
+		marginRight: 2,
 		marginBottom: 1
 	}),
 	onSelect: () => {
@@ -76,6 +76,7 @@ const sb = new ScrollBar({
 	id: "sb",
 	position: ScrollBar.DEFAULT_POSITION.extend({
 		marginTop: 1,
+		marginBottom: 1,
 		marginLeft: 2,
 		width: "50%",
 		height: "10"
@@ -85,7 +86,7 @@ const sb = new ScrollBar({
 });
 const list = new List({
 	id: "list",
-	items: ["Space", "XTree", "Ocean", "LavaBit"],
+	items: ["Space", "XTree", "Ocean", "LavaBit", "Marble"],
 	selectedIndex: 0,
 	position: List.DEFAULT_POSITION.extend({
 		marginLeft: 2,
@@ -95,18 +96,9 @@ const list = new List({
 		paddingBottom: 1,
 		paddingLeft: 2
 	}),
-	label: " Theme ",
 	autoSelect: true,
 	onSelect: ({selectedItem}) => {
-		selectedItem = selectedItem.trim();
-		switch (selectedItem) {
-			case "Space":
-			case "XTree":
-			case "Ocean":
-			case "LavaBit":
-				Theme[selectedItem].applyToComponent(screen);
-				break;
-		}
+		Theme[selectedItem.trim()].applyToComponent(screen);
 	}
 });
 const screen = new Screen({

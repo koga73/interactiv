@@ -95,7 +95,8 @@ class List extends Component {
 
 	drawSelf() {
 		const {items, selectedIndex, activeIndex, _computedPosition, _computedStyle, _longestItem} = this;
-		const {innerX: x, innerY: y} = _computedPosition;
+		const {innerX: x} = _computedPosition;
+		const {y, height, contentY} = _computedPosition.getScrollContentRange();
 		const {backgroundColor, color, selectedBackgroundColor, selectedColor} = _computedStyle;
 
 		const {stdout} = process;
@@ -103,8 +104,7 @@ class List extends Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		const itemsLen = items.length;
-		for (let i = 0; i < itemsLen; i++) {
+		for (let i = 0; i < height; i++) {
 			switch (i) {
 				case selectedIndex:
 					stdout.write(CURSOR.RESET);
@@ -126,8 +126,8 @@ class List extends Component {
 			}
 
 			stdout.cursorTo(x, y + i);
-			const remainingLen = _longestItem - items[i].length;
-			stdout.write(items[i] + " ".repeat(remainingLen));
+			const remainingLen = _longestItem - items[contentY + i].length;
+			stdout.write(items[contentY + i] + " ".repeat(remainingLen));
 		}
 
 		//Move cursor to active
@@ -172,9 +172,15 @@ class List extends Component {
 		switch (key.name) {
 			case "up":
 				this.gotoPrevious();
+				/*if (this._parent) {
+					this._parent.onKeyPress(str, key);
+				}*/
 				break;
 			case "down":
 				this.gotoNext();
+				/*if (this._parent) {
+					this._parent.onKeyPress(str, key);
+				}*/
 				break;
 			case "return":
 				this._selectIndex(this.activeIndex);
