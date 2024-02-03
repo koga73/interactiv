@@ -29,6 +29,15 @@ class XTree extends Theme {
 			labelColor: COLORS.FG.CYAN_BRIGHT,
 			selectedBackgroundColor: COLORS.BG.WHITE_BRIGHT,
 			selectedColor: COLORS.FG.BLUE
+		}),
+		ScrollBar: new Style({
+			border: BORDER.SINGLE,
+			borderColor: COLORS.FG.CYAN_BRIGHT,
+			labelColor: COLORS.FG.CYAN_BRIGHT,
+			trackCharacter: String.fromCharCode(0x2592),
+			trackColor: COLORS.FG.CYAN_BRIGHT,
+			thumbCharacter: String.fromCharCode(0x2588),
+			thumbColor: COLORS.FG.CYAN_BRIGHT
 		})
 	};
 

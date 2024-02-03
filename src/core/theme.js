@@ -16,6 +16,8 @@ class Theme {
 		const focusStyle = this.focusMap[component.id] || this.focusMap[componentType];
 		if (focusStyle) {
 			component.focusStyle = component.focusStyle ? component.focusStyle.extend(focusStyle, true) : focusStyle.clone();
+		} else {
+			component.focusStyle = null;
 		}
 
 		const childrenLen = component._children.length;

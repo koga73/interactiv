@@ -19,14 +19,16 @@ class Component {
 
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
-		this.render = this.render.bind(this);
+		this.compute = this.compute.bind(this);
 		this.computeStyle = this.computeStyle.bind(this);
 		this.computePosition = this.computePosition.bind(this);
+		this.render = this.render.bind(this);
 		this.drawBackground = this.drawBackground.bind(this);
 		this.drawBorder = this.drawBorder.bind(this);
 		this.drawLabel = this.drawLabel.bind(this);
-		this.drawChild = this.drawChild.bind(this);
+		this.drawString = this.drawString.bind(this);
 		this.drawSelf = this.drawSelf.bind(this);
+		this.renderChildren = this.renderChildren.bind(this);
 		this.onFocus = this.onFocus.bind(this);
 		this.onBlur = this.onBlur.bind(this);
 		this.onKeyPress = this.onKeyPress.bind(this);
@@ -39,9 +41,10 @@ class Component {
 
 		this._children = [];
 		this._parent = null;
-		this._computedPosition = null;
-		this._computedStyle = null;
+		this._computedPosition = new Position();
+		this._computedStyle = new Style();
 		this._focused = false;
+		this._needsRender = false;
 		this._reactiveProps = ["label", "focusable", "position", "style", "focusStyle", "_children", "_focused"];
 		this._lastState = {};
 
@@ -70,69 +73,84 @@ class Component {
 		return Object.assign(this.clone(), props);
 	}
 
-	render(parent, {parentComputedPosition, parentComputedStyle, previousChildPosition} = {}, {force = false, debug = false} = {}) {
-		let didRender = false;
-
-		this._parent = parent;
-		const {id, position, style, focusStyle, _focused: focused, _children: children} = this;
-
-		const needsRender = force ? true : this.needsRender(false, debug);
-		if (needsRender) {
-			if (force) {
-				RenderLog.log(`'${id}' - force`);
-			}
-			this.computeStyle(focused ? focusStyle || style : style, {parentComputedStyle});
-			this.computePosition(position, {parentComputedPosition, parentComputedStyle, previousChildPosition});
-			this.drawBackground();
-			this.drawBorder();
-			this.drawLabel();
-			this.drawSelf();
+	compute(params, {force = false, delta = 0, debug = false} = {}) {
+		if (debug && force) {
+			RenderLog.log(`'${this.id}' - force render`);
+		}
+		this._needsRender = force ? true : this.needsRender(false, debug);
+		if (this._needsRender) {
+			this.computeStyle({...params, debug});
+			this.computePosition({...params, delta, debug});
 		}
 
-		//Render children
+		//Compute children
+		const {_children: children} = this;
 		if (children) {
 			let prevChildPos = null;
 			const childrenLen = children.length;
 			for (let i = 0; i < childrenLen; i++) {
 				const child = children[i];
 				if (child instanceof Component) {
-					didRender |= child.render(
-						this,
-						{parentComputedPosition: this._computedPosition, parentComputedStyle: this._computedStyle, previousChildPosition: prevChildPos},
-						{force: force | needsRender, debug}
+					child.compute(
+						{
+							parentComputedPosition: this._computedPosition,
+							parentComputedStyle: this._computedStyle,
+							previousChildPosition: prevChildPos
+						},
+						{force: force | this._needsRender, delta, debug}
 					);
 					prevChildPos = child._computedPosition;
-				} else if (needsRender) {
-					this.drawChild(child);
 				}
 			}
 		}
+	}
 
-		if (needsRender) {
-			this._storeLastState();
+	computeStyle({parentComputedStyle} = {}, overrides = {}) {
+		if (!this._needsRender) {
+			return;
 		}
-
-		return didRender | needsRender;
+		const {style, focusStyle, _focused: focused} = this;
+		const styleToCompute = focused ? focusStyle || style : style;
+		styleToCompute.compute(parentComputedStyle, {intoStyle: this._computedStyle}, overrides);
 	}
 
-	computeStyle(style, {parentComputedStyle}) {
-		this._computedStyle = style.compute(parentComputedStyle);
-	}
+	computePosition({parentComputedPosition, previousChildPosition}, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
+		overrides.borderSize = this._computedStyle.border ? 1 : 0;
 
-	computePosition(position, {parentComputedPosition, parentComputedStyle, previousChildPosition}, overrides = {}) {
-		this._computedPosition = position.compute(
+		this.position.compute(
 			parentComputedPosition,
 			{
-				parentHasBorder: parentComputedStyle ? parentComputedStyle.border !== null : false,
+				intoPosition: this._computedPosition,
 				previousChildPosition
 			},
 			overrides
 		);
 	}
 
+	render(parent) {
+		this._parent = parent;
+
+		const {_needsRender: needsRender} = this;
+		if (needsRender) {
+			this.drawBackground();
+			this.drawBorder();
+			this.drawLabel();
+			this.drawSelf();
+		}
+		const didRender = this.renderChildren();
+		if (needsRender) {
+			this._storeLastState();
+		}
+
+		return needsRender | didRender;
+	}
+
 	drawBackground() {
 		const {id, _computedPosition, _computedStyle} = this;
-		const {x, y, width, height} = _computedPosition;
+		const {x, y, width, height, _scrollY: scrollY, _scrollHeight: scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBackground - width: ${width}`);
 		}
@@ -146,8 +164,9 @@ class Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		for (let i = 0; i < height; i++) {
-			stdout.cursorTo(x, y + i);
+		const drawHeight = scrollHeight > 0 ? Math.min(height, scrollHeight) : height;
+		for (let i = scrollY; i < drawHeight + scrollY; i++) {
+			stdout.cursorTo(x, y + i - scrollY);
 			stdout.write(" ".repeat(width));
 		}
 	}
@@ -157,7 +176,7 @@ class Component {
 		if (!_computedStyle.border) {
 			return;
 		}
-		const {x, y, width, height} = _computedPosition;
+		const {x, y, width, height, _scrollY: scrollY, _scrollHeight: scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBorder - width: ${width}`);
 		}
@@ -171,20 +190,27 @@ class Component {
 		stdout.write(borderBackgroundColor);
 		stdout.write(borderColor);
 
-		stdout.cursorTo(x, y);
-		stdout.write(border.topLeft);
-		stdout.write(border.horizontal.repeat(width - 2));
-		stdout.write(border.topRight);
-		for (let i = 1; i < height - 1; i++) {
-			stdout.cursorTo(x, y + i);
+		const drawHeight = scrollHeight > 0 ? Math.min(height, scrollHeight) : height;
+		const topVisible = scrollY === 0;
+		const bottomVisible = scrollHeight === 0 || scrollY + scrollHeight === height;
+		if (topVisible) {
+			stdout.cursorTo(x, y);
+			stdout.write(border.topLeft);
+			stdout.write(border.horizontal.repeat(width - 2));
+			stdout.write(border.topRight);
+		}
+		for (let i = topVisible ? scrollY + 1 : scrollY; i < scrollY + drawHeight; i++) {
+			stdout.cursorTo(x, y + i - scrollY);
 			stdout.write(border.vertical);
-			stdout.cursorTo(x + width - 1, y + i);
+			stdout.cursorTo(x + width - 1, y + i - scrollY);
 			stdout.write(border.vertical);
 		}
-		stdout.cursorTo(x, y + height - 1);
-		stdout.write(border.bottomLeft);
-		stdout.write(border.horizontal.repeat(width - 2));
-		stdout.write(border.bottomRight);
+		if (bottomVisible) {
+			stdout.cursorTo(x, y + drawHeight - 1);
+			stdout.write(border.bottomLeft);
+			stdout.write(border.horizontal.repeat(width - 2));
+			stdout.write(border.bottomRight);
+		}
 	}
 
 	drawLabel() {
@@ -196,8 +222,12 @@ class Component {
 		if (!labelWidth) {
 			return;
 		}
-		const {x, y, width, labelOriginX} = _computedPosition;
+		const {x, y, width, labelOriginX, _scrollY: scrollY} = _computedPosition;
 		const {labelBackgroundColor, labelColor} = _computedStyle;
+		const topVisible = scrollY === 0;
+		if (!topVisible) {
+			return;
+		}
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -219,13 +249,31 @@ class Component {
 	}
 
 	drawSelf() {
-		const {x, y} = this._computedPosition;
+		const {_innerX: x, _innerY: y} = this._computedPosition;
 		const {stdout} = process;
 		stdout.cursorTo(x, y);
 	}
 
-	drawChild(child) {
-		const {x, y} = this._computedPosition;
+	renderChildren() {
+		let didRender = false;
+		const {_children: children} = this;
+		if (!children) {
+			return didRender;
+		}
+		const childrenLen = children.length;
+		for (let i = 0; i < childrenLen; i++) {
+			const child = children[i];
+			if (child instanceof Component) {
+				didRender |= child.render(this);
+			} else {
+				this.drawString(child);
+			}
+		}
+		return didRender;
+	}
+
+	drawString(str) {
+		const {_innerX: x, _innerY: y} = this._computedPosition;
 		const {backgroundColor, color} = this._computedStyle;
 
 		const {stdout} = process;
@@ -234,7 +282,7 @@ class Component {
 		stdout.write(color);
 
 		stdout.cursorTo(x, y);
-		stdout.write(child);
+		stdout.write(str);
 	}
 
 	onFocus() {
@@ -288,6 +336,11 @@ class Component {
 		const {id, position, _children: children, _reactiveProps: reactiveProps} = this;
 		const {position: lastPosition} = this._lastState;
 
+		//Parent only needs to rerender if the position changes
+		if (fromParent) {
+			return position !== lastPosition;
+		}
+
 		//See if any children need to rerender
 		if (children) {
 			const childrenLen = children.length;
@@ -302,10 +355,6 @@ class Component {
 					}
 				}
 			}
-		}
-		//Parent only needs to rerender if the position changes
-		if (fromParent) {
-			return position !== lastPosition;
 		}
 
 		const reactivePropsLen = reactiveProps.length;

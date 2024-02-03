@@ -49,12 +49,11 @@ class Input extends Component {
 	}
 
 	clone() {
-		const {id, label, _children: children, focusable, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
+		const {id, label, _children: children, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
 		return new Input({
 			id,
 			label,
 			children,
-			focusable,
 			focusTrap,
 			focusStyle: focusStyle ? focusStyle.clone() : null,
 			position: position.clone(),
@@ -67,7 +66,10 @@ class Input extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		if (this.position.height <= 0) {
 			const hasBorder = this._computedStyle.border !== null;
 			if (hasBorder) {
@@ -76,13 +78,12 @@ class Input extends Component {
 				overrides.height = 1;
 			}
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {
-		const {x, y, width} = this._computedPosition;
-		const {border, backgroundColor, color, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {_innerX: x, _innerY: y, _innerWidth: width} = this._computedPosition;
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -92,14 +93,9 @@ class Input extends Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		if (hasBorder) {
-			stdout.cursorTo(x + 1, y + 1);
-		} else {
-			stdout.cursorTo(x, y);
-		}
-		const innerWidth = hasBorder ? width - 2 : width;
+		stdout.cursorTo(x, y);
 		const val = this.mask ? this.mask.repeat(this.value.length) : this.value;
-		stdout.write(val.length > innerWidth ? val.slice(-innerWidth) : val);
+		stdout.write(val.length > width ? val.slice(-width) : val);
 	}
 
 	onKeyPress(str, key) {

@@ -44,14 +44,11 @@ class Text extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
-		const parentHasBorder = parentDetails.parentComputedStyle ? parentDetails.parentComputedStyle.border !== null : false;
-		const width = this.position.calcDimension(
-			this.position.width,
-			parentDetails.parentComputedPosition.width,
-			this.position.marginLeft + this.position.marginRight,
-			parentHasBorder
-		);
+	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
+		const width = this.position.calcDimension(this.position.width, parentDetails.parentComputedPosition._innerWidth, this.position.marginLeft + this.position.marginRight);
 		this._lines = this.wordWrap(this.value, width);
 		overrides.width = width;
 
@@ -63,13 +60,13 @@ class Text extends Component {
 				overrides.height = this._lines.length;
 			}
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {
-		const {x, y} = this._computedPosition;
-		const {border, backgroundColor, color, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {_innerX: x} = this._computedPosition;
+		const {y, height, contentY} = this._computedPosition.getScrollContentRange();
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -80,32 +77,35 @@ class Text extends Component {
 		stdout.write(color);
 
 		const lines = this._lines;
-		const linesLen = lines.length;
-		for (let i = 0; i < linesLen; i++) {
-			if (hasBorder) {
-				stdout.cursorTo(x + 1, y + 1 + i);
-			} else {
-				stdout.cursorTo(x, y + i);
-			}
-			stdout.write(lines[i]);
+		for (let i = 0; i < height; i++) {
+			stdout.cursorTo(x, y + i);
+			stdout.write(lines[i + contentY]);
 		}
 	}
 
 	//Separate text into multiple lines
 	wordWrap(text, charsPerLine) {
-		const lines = [];
-		let line = "";
-		const words = text.split(" ");
-		for (let i = 0; i < words.length; i++) {
-			if (line.length + words[i].length > charsPerLine) {
-				lines.push(line.trim());
-				line = words[i] + " ";
+		return text.split("\n").reduce((lines, line) => {
+			line = line.trim();
+			if (line.length <= charsPerLine) {
+				lines.push(line);
 			} else {
-				line += words[i] + " ";
+				let newLine = "";
+				const words = line.replace(/\s+/g, " ").split(" ");
+				const wordsLen = words.length;
+				for (let i = 0; i < wordsLen; i++) {
+					const word = words[i];
+					if (newLine.length + word.length > charsPerLine) {
+						lines.push(newLine);
+						newLine = word + " ";
+					} else {
+						newLine += word + " ";
+					}
+				}
+				lines.push(newLine.slice(0, -1));
 			}
-		}
-		lines.push(line.trim());
-		return lines;
+			return lines;
+		}, []);
 	}
 }
 export default Text;

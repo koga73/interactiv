@@ -5,17 +5,13 @@ import Position from "./core/position.js";
 import Style from "./core/style.js";
 import Component from "./core/component.js";
 
-import Screen from "./components/screen.js";
-import Window from "./components/window.js";
-import Text from "./components/text.js";
-import Input from "./components/input.js";
-import Button from "./components/button.js";
-import List from "./components/list.js";
+import {Button, Input, List, Screen, ScrollBar, Text, Window} from "./components/index.js";
 
 import Theme from "./core/theme.js";
-import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit} from "./themes/index.js";
+import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit, Marble as ThemeMarble} from "./themes/index.js";
 
 import RenderLog from "./core/render-log.js";
+import NormalTimer from "./utils/normal-timer.js";
 
 class _class {
 	static DEFAULT_FPS = 10;
@@ -27,10 +23,13 @@ class _class {
 	static _currentScreen = null;
 	static _focus = null;
 	static _autoUpdateInterval = 0;
+	static _timer = null;
+	static _parentComputedPosition = new Position();
 
 	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE} = {}) {
 		if (autoUpdate) {
 			_class._autoUpdateInterval = setInterval(_class.render, Math.floor(1000 / fps));
+			_class._timer = new NormalTimer();
 		}
 
 		if (process.stdin.isTTY) {
@@ -45,6 +44,7 @@ class _class {
 
 	static destroy() {
 		clearInterval(_class._autoUpdateInterval);
+		_class._timer = null;
 
 		process.stdin.off("keypress", _class._handler_keypress);
 		if (process.stdin.isTTY) {
@@ -66,10 +66,14 @@ class _class {
 
 	static getWindowSize() {
 		const [cols, rows] = process.stdout.getWindowSize();
+		if (_class._parentComputedPosition.width !== cols || _class._parentComputedPosition.height !== rows) {
+			_class._parentComputedPosition = new Position({width: cols, height: rows});
+		}
 		return {cols, rows};
 	}
 
 	static render(screen, force = false) {
+		const delta = _class._timer.tick();
 		if (screen) {
 			_class._currentScreen = screen;
 		} else {
@@ -81,27 +85,31 @@ class _class {
 		if (_class.paused) {
 			return;
 		}
-		const {cols, rows} = _class.getWindowSize();
 
+		//Compute sizes and positions
+		_class.getWindowSize();
+		screen.compute(
+			{
+				parentComputedPosition: _class._parentComputedPosition
+			},
+			{force, delta, debug: _class.debug}
+		);
+
+		//Render
 		process.stdout.cork();
 
-		const didRender = screen.render(
-			ROOT,
-			{
-				parentComputedPosition: new Position({
-					width: cols,
-					height: rows
-				})
-			},
-			{force, debug: _class.debug}
-		);
+		const didRender = screen.render(ROOT);
 		if (didRender) {
+			//Focus
 			if (!(_class._focus && _class._focus.isRendered())) {
 				_class.focusFirst();
 			}
 			_class._focus.onFocus();
 
-			RenderLog.log("RENDER COMPLETE!\n");
+			//Debug
+			if (_class.debug) {
+				RenderLog.log("RENDER COMPLETE!\n");
+			}
 		}
 
 		process.nextTick(() => process.stdout.uncork());
@@ -223,10 +231,13 @@ class _class {
 export default _class;
 export {ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
-export {Screen, Window, Text, Input, Button, List};
+export {Screen, Window, Text, Input, Button, List, ScrollBar};
 
 Theme.Space = new ThemeSpace();
 Theme.XTree = new ThemeXTree();
 Theme.Ocean = new ThemeOcean();
 Theme.LavaBit = new ThemeLavaBit();
-export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit};
+Theme.Marble = new ThemeMarble();
+export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit, ThemeMarble};
+
+export {RenderLog};

@@ -28,45 +28,54 @@ class Style {
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
-		this.toString = this.toString.bind(this);
+		this.shouldCopyProp = this.shouldCopyProp.bind(this);
 
 		//Add remaining props
 		for (const prop in remaining) {
-			if (prop[0] === "_" || typeof remaining[prop] === "function") {
-				continue;
+			if (this.shouldCopyProp(prop)) {
+				this[prop] = remaining[prop];
 			}
-			this[prop] = remaining[prop];
 		}
 	}
 
-	clone() {
-		const style = new Style(this);
-		style._extended = {...this._extended};
-		return style;
+	clone(intoStyle = null) {
+		if (!intoStyle) {
+			const style = new Style(this);
+			style._extended = {...this._extended};
+			return style;
+		}
+		for (const prop in this) {
+			if (this.shouldCopyProp(prop)) {
+				intoStyle[prop] = this[prop];
+			}
+		}
+		return intoStyle;
 	}
 
-	extend(fromStyle, soft = false) {
-		const style = this.clone();
+	extend(fromStyle, soft = false, intoStyle = null) {
+		const style = this.clone(intoStyle);
 		for (const prop in fromStyle) {
 			//Skip properies starting with underscore and functions
-			if (prop[0] === "_" || typeof fromStyle[prop] === "function") {
+			if (!this.shouldCopyProp(prop)) {
 				continue;
 			}
+			const propVal = fromStyle[prop];
 			if (soft) {
-				style[prop] = style._extended[prop] ?? fromStyle[prop];
+				style[prop] = typeof style._extended[prop] !== typeof undefined ? style._extended[prop] : propVal;
 			} else {
-				style[prop] = fromStyle[prop] ?? style[prop];
-				if (fromStyle[prop]) {
-					style._extended[prop] = fromStyle[prop];
+				const isFromDefined = typeof propVal !== typeof undefined;
+				style[prop] = isFromDefined ? propVal : style[prop];
+				if (isFromDefined) {
+					style._extended[prop] = propVal;
 				}
 			}
 		}
 		return style;
 	}
 
-	compute(parentStyle) {
-		const {backgroundColor, color, border, borderBackgroundColor, borderColor, labelBackgroundColor, labelColor} = this;
-		const computed = this.clone();
+	compute(parentStyle, {intoStyle} = {}, overrides = {}) {
+		const computed = this.clone(intoStyle);
+		const {backgroundColor, color, border, borderBackgroundColor, borderColor, labelBackgroundColor, labelColor} = Object.assign({}, this, overrides);
 
 		if (parentStyle) {
 			computed.backgroundColor = backgroundColor || parentStyle.backgroundColor;
@@ -80,9 +89,8 @@ class Style {
 		return computed;
 	}
 
-	toString() {
-		const {backgroundColor, color, border, borderBackgroundColor, borderColor, labelBackgroundColor, labelColor} = this;
-		return {backgroundColor, color, border, borderBackgroundColor, borderColor, labelBackgroundColor, labelColor};
+	shouldCopyProp(prop) {
+		return prop[0] !== "_" && typeof this[prop] !== "function";
 	}
 }
 export default Style;

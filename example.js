@@ -1,5 +1,5 @@
 import Interactiv, {Position, Style, ORIGIN, BORDER, COLORS, Theme} from "./src/interactiv.js";
-import {Screen, Window, Text, Input, Button, List} from "./src/interactiv.js";
+import {Screen, Window, Text, Input, Button, List, ScrollBar} from "./src/interactiv.js";
 
 const windowText1 = new Text({
 	id: "windowText1",
@@ -34,7 +34,7 @@ const btn = new Button({
 	id: "btn",
 	value: "Submit",
 	position: Button.DEFAULT_POSITION.extend({
-		marginRight: 3,
+		marginRight: 2,
 		marginBottom: 1
 	}),
 	onSelect: () => {
@@ -65,29 +65,50 @@ const statusBar = new Text({
 	}),
 	value: "Status Bar 100%"
 });
-const list = new List({
-	id: "list",
-	items: ["Space", "XTree", "Ocean", "LavaBit"],
+const sbContent = new List({
+	id: "sbContent",
+	items: new Array(30).fill(1).map((_, i) => `Line ${i + 1}`),
 	selectedIndex: 0,
 	position: List.DEFAULT_POSITION.extend({
 		marginLeft: 2,
+		marginBottom: 1,
 		paddingTop: 1,
 		paddingRight: 2,
 		paddingBottom: 1,
 		paddingLeft: 2
 	}),
+	autoSelect: true,
+	onSelect: ({selectedItem}) => {}
+});
+const sb = new ScrollBar({
+	id: "sb",
+	focusable: false,
+	position: ScrollBar.DEFAULT_POSITION.extend({
+		marginTop: 1,
+		marginBottom: 1,
+		marginLeft: 2,
+		width: "50%",
+		height: "10"
+	}),
+	label: " Text Scroller ",
+	children: [sbContent]
+});
+const list = new List({
+	id: "list",
 	label: " Theme ",
+	items: ["Space", "XTree", "Ocean", "LavaBit", "Marble"],
+	selectedIndex: 0,
+	position: List.DEFAULT_POSITION.extend({
+		marginLeft: 2,
+		marginBottom: 1,
+		paddingTop: 1,
+		paddingRight: 2,
+		paddingBottom: 1,
+		paddingLeft: 2
+	}),
 	autoSelect: true,
 	onSelect: ({selectedItem}) => {
-		selectedItem = selectedItem.trim();
-		switch (selectedItem) {
-			case "Space":
-			case "XTree":
-			case "Ocean":
-			case "LavaBit":
-				Theme[selectedItem].applyToComponent(screen);
-				break;
-		}
+		Theme[selectedItem.trim()].applyToComponent(screen);
 	}
 });
 const screen = new Screen({
@@ -99,14 +120,14 @@ const screen = new Screen({
 		border: BORDER.DOUBLE
 	}),
 	label: " My Application ",
-	children: [statusBar, input3, list, window],
+	children: [statusBar, input3, list, sb, window],
 	onSelect: () => {
 		Interactiv.destroy();
 		console.log("Back to the terminal.");
 	}
 });
 
-Interactiv.debug = true;
+//Interactiv.debug = true;
 Interactiv.initialize();
 Interactiv.clear();
 Interactiv.focus(input1);

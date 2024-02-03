@@ -52,7 +52,10 @@ class Button extends Component {
 		});
 	}
 
-	computePosition(params, parentDetails, overrides = {}) {
+	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
 		const {position, value, _computedStyle} = this;
 		if (position.width <= 0) {
 			overrides.width = value.length + position.paddingLeft + position.paddingRight;
@@ -65,13 +68,12 @@ class Button extends Component {
 			overrides.width += 2;
 			overrides.height += 2;
 		}
-		super.computePosition(params, parentDetails, overrides);
+		super.computePosition(parentDetails, overrides);
 	}
 
 	drawSelf() {
-		const {x, y, paddingTop, paddingLeft} = this._computedPosition;
-		const {backgroundColor, color, border, underline} = this._computedStyle;
-		const hasBorder = border !== null;
+		const {_innerX: x, _innerY: y} = this._computedPosition;
+		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -81,11 +83,7 @@ class Button extends Component {
 		stdout.write(backgroundColor);
 		stdout.write(color);
 
-		const cursorStart = [x + paddingLeft, y + paddingTop];
-		if (hasBorder) {
-			cursorStart[0] += 1;
-			cursorStart[1] += 1;
-		}
+		const cursorStart = [x, y];
 		stdout.cursorTo(cursorStart[0], cursorStart[1]);
 		stdout.write(this.value);
 		stdout.cursorTo(cursorStart[0], cursorStart[1]);
