@@ -15,6 +15,7 @@ class Constants {
 	};
 
 	static BORDER = {
+		NONE: null,
 		SINGLE: {
 			topLeft: "┌",
 			topRight: "┐",

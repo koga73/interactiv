@@ -1,15 +1,26 @@
 {
-	"name": "interactiv",
+	"name": "deluxe-cli",
 	"version": "0.1.0",
-	"description": "Make command line scripts beautiful and interactive",
-	"main": "src/interactiv.js",
+	"description": "Build colorful complex layouts in the console!",
+	"main": "src/deluxe-cli.js",
 	"type": "module",
 	"scripts": {
-		"test": "node example.js"
+		"test": "node example/test.js"
 	},
 	"author": {
 		"name": "AJ Savino",
 		"email": "koga73@gmail.com"
 	},
+	"keywords": [
+		"cli",
+		"console",
+		"command",
+		"line",
+		"terminal",
+		"shell",
+		"layout",
+		"color",
+		"component"
+	],
 	"license": "MIT"
 }

@@ -229,7 +229,7 @@ class _class {
 }
 
 export default _class;
-export {ORIGIN, BORDER, CURSOR, COLORS};
+export {ROOT, ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
 export {Screen, Window, Text, Input, Button, List, ScrollBar};
 

@@ -15,7 +15,7 @@ class Window extends Component {
 	});
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Window.NAME];
 
-	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onSelect = null}) {
+	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onClose = null, onSelect = null}) {
 		super({
 			id,
 			label,
@@ -27,6 +27,7 @@ class Window extends Component {
 		});
 
 		this.userClosable = userClosable;
+		this.onClose = onClose;
 		this.onSelect = onSelect;
 	}
 
@@ -53,8 +54,12 @@ class Window extends Component {
 				}
 				break;
 			case "escape":
-				if (this.userClosable && this._parent) {
-					this._parent.removeChild(this);
+				if (this.userClosable) {
+					if (this.onClose) {
+						this.onClose();
+					} else if (this._parent) {
+						this._parent.removeChild(this);
+					}
 				}
 				break;
 		}

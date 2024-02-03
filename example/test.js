@@ -1,5 +1,5 @@
-import Interactiv, {Position, Style, ORIGIN, BORDER, COLORS, Theme} from "./src/interactiv.js";
-import {Screen, Window, Text, Input, Button, List, ScrollBar} from "./src/interactiv.js";
+import DeluxeCLI, {Position, Style, ORIGIN, BORDER, COLORS, Theme} from "../src/deluxe-cli.js";
+import {Screen, Window, Text, Input, Button, List, ScrollBar} from "../src/deluxe-cli.js";
 
 const windowText1 = new Text({
 	id: "windowText1",
@@ -122,26 +122,26 @@ const screen = new Screen({
 	label: " My Application ",
 	children: [statusBar, input3, list, sb, window],
 	onSelect: () => {
-		Interactiv.destroy();
+		DeluxeCLI.destroy();
 		console.log("Back to the terminal.");
 	}
 });
 
-//Interactiv.debug = true;
-Interactiv.initialize();
-Interactiv.clear();
-Interactiv.focus(input1);
-Interactiv.render(screen);
+DeluxeCLI.debug = true;
+DeluxeCLI.initialize();
+DeluxeCLI.clear();
+DeluxeCLI.focus(input1);
+DeluxeCLI.render(screen);
 
 let showingLog = false;
-Interactiv.onKeyPress = (str, key) => {
+DeluxeCLI.onKeyPress = (str, key) => {
 	//ctrl+l to view render log
 	if (key.ctrl === true && key.name === "l") {
 		showingLog = !showingLog;
 		if (showingLog) {
-			Interactiv.showLog();
+			DeluxeCLI.showLog();
 		} else {
-			Interactiv.hideLog();
+			DeluxeCLI.hideLog();
 		}
 	}
 };
