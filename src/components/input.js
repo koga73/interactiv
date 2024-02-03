@@ -26,7 +26,8 @@ class Input extends Component {
 		maxLength = 0,
 		disabled = false,
 		mask = null,
-		allowedCharacters = Input.DEFAUT_ALLOWED_CHARACTERS
+		allowedCharacters = Input.DEFAUT_ALLOWED_CHARACTERS,
+		onChange = null
 	}) {
 		super({
 			id,
@@ -44,12 +45,13 @@ class Input extends Component {
 		this.disabled = disabled;
 		this.mask = mask;
 		this.allowedCharacters = allowedCharacters;
+		this.onChange = onChange;
 
 		this._reactiveProps = [...this._reactiveProps, "value", "maxLength", "disabled", "mask"];
 	}
 
 	clone() {
-		const {id, label, _children: children, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters} = this;
+		const {id, label, _children: children, focusTrap, focusStyle, position, style, value, maxLength, disabled, mask, allowedCharacters, onChange} = this;
 		return new Input({
 			id,
 			label,
@@ -62,7 +64,8 @@ class Input extends Component {
 			maxLength,
 			disabled,
 			mask,
-			allowedCharacters
+			allowedCharacters,
+			onChange
 		});
 	}
 
@@ -108,17 +111,29 @@ class Input extends Component {
 			if (maxLength > 0) {
 				if (this.value + 1 <= maxLength) {
 					this.value += str;
+					if (this.onChange) {
+						this.onChange(this.value);
+					}
 				}
 			} else {
 				this.value += str;
+				if (this.onChange) {
+					this.onChange(this.value);
+				}
 			}
 		} else {
 			switch (key.name) {
 				case "backspace":
 					this.value = this.value.slice(0, -1);
+					if (this.onChange) {
+						this.onChange(this.value);
+					}
 					break;
 				case "delete":
 					this.value = "";
+					if (this.onChange) {
+						this.onChange(this.value);
+					}
 					break;
 				default:
 					if (this._parent) {
