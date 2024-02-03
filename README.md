@@ -2,6 +2,8 @@
 
 Build colorful complex layouts in the console!
 
+![Theme XTree](artifacts/theme-xtree.png)
+
 ## Features
 
 -   Component based layouts based on the box model
@@ -46,7 +48,7 @@ const screenMain = new Screen({
 		border: BORDER.DOUBLE //Add a double border around the edge
 	}),
 	label: " My Application ",
-	children: [txtHeading, listTheme, windowLogin],
+	children: [listTheme, windowLogin],
 	onSelect: () => {
 		//Called when enter is pressed on the screen
 		DeluxeCLI.destroy();
@@ -59,7 +61,7 @@ DeluxeCLI.clear();
 DeluxeCLI.render(screenMain);
 
 //Cascade the theme to the screen and its children
-Theme.LavaBit.applyToComponent(screen);
+Theme.LavaBit.applyToComponent(screenMain);
 ```
 
 #### Screen Methods
@@ -78,7 +80,7 @@ import {Window} from "deluxe-cli";
 const windowLogin = new Window({
 	id: "windowLogin",
 	label: " Login ",
-	children: [inputUser, inputPass, btnSubmit],
+	children: [txtHeading, inputUser, inputPass, btnSubmit],
 	onSelect: () => {
 		//Called when enter is pressed on the window
 		//TODO: Login logic
@@ -179,8 +181,10 @@ const listTheme = new List({
 	label: " Theme ",
 	items: ["Space", "XTree", "Ocean", "LavaBit", "Marble"],
 	position: List.DEFAULT_POSITION.extend({
-		marginLeft: 2,
+		marginTop: 1,
+		marginRight: 2,
 		marginBottom: 1,
+		marginLeft: 2,
 		paddingTop: 1,
 		paddingRight: 2,
 		paddingBottom: 1,
@@ -220,24 +224,26 @@ import {Text, ScrollBar} from "deluxe-cli";
 const txtTandC = new Text({
 	id: "txtTandC",
 	value:
-		"Terms and Conditions..." +
+		"Terms and Conditions...\n" +
 		new Array(100)
 			.fill(1)
 			.map((_, i) => `Line ${i + 1}`)
 			.join("\n"),
 	position: Text.DEFAULT_POSITION.extend({
-		width: "100%",
-		height: "100%"
+		width: "100%"
+		//No height 100% because height 0 = auto height
 	})
 });
 
 const sbTxtTandC = new ScrollBar({
 	id: "sbTxtTandC",
 	position: ScrollBar.DEFAULT_POSITION.extend({
-		width: "50%",
-		height: "10"
+		width: "100%",
+		height: "10",
+		marginLeft: 2,
+		marginRight: 2
 	}),
-	label: " Text Scroller ",
+	label: " Terms and Conditions ",
 	children: [txtTandC]
 });
 ```
@@ -412,12 +418,16 @@ The following built-in themes are available
 
 ##### Space
 
+![Theme Space](artifacts/theme-space.png)
+
 ```js
 import {Theme} from "deluxe-cli";
 Theme.Space.applyToComponent(screen);
 ```
 
 ##### XTree
+
+![Theme XTree](artifacts/theme-xtree.png)
 
 ```js
 import {Theme} from "deluxe-cli";
@@ -426,6 +436,8 @@ Theme.XTree.applyToComponent(screen);
 
 ##### Ocean
 
+![Theme Ocean](artifacts/theme-ocean.png)
+
 ```js
 import {Theme} from "deluxe-cli";
 Theme.Ocean.applyToComponent(screen);
@@ -433,12 +445,16 @@ Theme.Ocean.applyToComponent(screen);
 
 ##### LavaBit
 
+![Theme LavaBit](artifacts/theme-lavabit.png)
+
 ```js
 import {Theme} from "deluxe-cli";
 Theme.LavaBit.applyToComponent(screen);
 ```
 
 ##### Marble
+
+![Theme Marble](artifacts/theme-marble.png)
 
 ```js
 import {Theme} from "deluxe-cli";

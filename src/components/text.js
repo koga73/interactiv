@@ -6,9 +6,7 @@ import {DEFAULT as ThemeDefault} from "../themes/index.js";
 class Text extends Component {
 	static NAME = "Text";
 
-	static DEFAULT_POSITION = new Position({
-		width: "100%"
-	});
+	static DEFAULT_POSITION = new Position();
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Text.NAME];
 
 	constructor({id = "", label = "", position = null, style = null, value = ""}) {
@@ -48,17 +46,14 @@ class Text extends Component {
 		if (!this._needsRender) {
 			return;
 		}
-		const width = this.position.calcDimension(this.position.width, parentDetails.parentComputedPosition._innerWidth, this.position.marginLeft + this.position.marginRight);
-		this._lines = this.wordWrap(this.value, width);
-		overrides.width = width;
+		const {position, value} = this;
+		if (position.width <= 0) {
+			overrides.width = position.calcDimension(value.length, parentDetails.parentComputedPosition._innerWidth, position.marginLeft + position.marginRight);
+		}
+		this._lines = this.wordWrap(value, position.width || overrides.width);
 
-		if (this.position.height <= 0) {
-			const hasBorder = this._computedStyle.border !== null;
-			if (hasBorder) {
-				overrides.height = this._lines.length + 2;
-			} else {
-				overrides.height = this._lines.length;
-			}
+		if (position.height <= 0) {
+			overrides.height = this._lines.length;
 		}
 		super.computePosition(parentDetails, overrides);
 	}

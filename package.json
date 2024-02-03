@@ -5,7 +5,8 @@
 	"main": "src/deluxe-cli.js",
 	"type": "module",
 	"scripts": {
-		"test": "node example/test.js"
+		"test": "node example/test.js",
+		"example": "node example/readme.js"
 	},
 	"author": {
 		"name": "AJ Savino",
