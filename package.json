@@ -23,5 +23,16 @@
 		"color",
 		"component"
 	],
-	"license": "MIT"
+	"license": "MIT",
+	"directories": {
+		"example": "example"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/koga73/deluxe-cli.git"
+	},
+	"bugs": {
+		"url": "https://github.com/koga73/deluxe-cli/issues"
+	},
+	"homepage": "https://github.com/koga73/deluxe-cli#readme"
 }
