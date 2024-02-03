@@ -150,7 +150,7 @@ class Component {
 
 	drawBackground() {
 		const {id, _computedPosition, _computedStyle} = this;
-		const {x, y, width, height, scrollY, scrollHeight} = _computedPosition;
+		const {x, y, width, height, _scrollY: scrollY, _scrollHeight: scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBackground - width: ${width}`);
 		}
@@ -176,7 +176,7 @@ class Component {
 		if (!_computedStyle.border) {
 			return;
 		}
-		const {x, y, width, height, scrollY, scrollHeight} = _computedPosition;
+		const {x, y, width, height, _scrollY: scrollY, _scrollHeight: scrollHeight} = _computedPosition;
 		if (width <= 0) {
 			throw new Error(`'${id}' - Cannot drawBorder - width: ${width}`);
 		}
@@ -222,7 +222,7 @@ class Component {
 		if (!labelWidth) {
 			return;
 		}
-		const {x, y, width, labelOriginX, scrollY} = _computedPosition;
+		const {x, y, width, labelOriginX, _scrollY: scrollY} = _computedPosition;
 		const {labelBackgroundColor, labelColor} = _computedStyle;
 		const topVisible = scrollY === 0;
 		if (!topVisible) {
@@ -249,7 +249,7 @@ class Component {
 	}
 
 	drawSelf() {
-		const {innerX: x, innerY: y} = this._computedPosition;
+		const {_innerX: x, _innerY: y} = this._computedPosition;
 		const {stdout} = process;
 		stdout.cursorTo(x, y);
 	}
@@ -273,7 +273,7 @@ class Component {
 	}
 
 	drawString(str) {
-		const {innerX: x, innerY: y} = this._computedPosition;
+		const {_innerX: x, _innerY: y} = this._computedPosition;
 		const {backgroundColor, color} = this._computedStyle;
 
 		const {stdout} = process;

@@ -95,7 +95,7 @@ class List extends Component {
 
 	drawSelf() {
 		const {items, selectedIndex, activeIndex, _computedPosition, _computedStyle, _longestItem} = this;
-		const {innerX: x} = _computedPosition;
+		const {_innerX: x} = _computedPosition;
 		const {y, height, contentY} = _computedPosition.getScrollContentRange();
 		const {backgroundColor, color, selectedBackgroundColor, selectedColor} = _computedStyle;
 

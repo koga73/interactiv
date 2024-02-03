@@ -95,6 +95,7 @@ const sb = new ScrollBar({
 });
 const list = new List({
 	id: "list",
+	label: " Theme ",
 	items: ["Space", "XTree", "Ocean", "LavaBit", "Marble"],
 	selectedIndex: 0,
 	position: List.DEFAULT_POSITION.extend({
@@ -126,7 +127,7 @@ const screen = new Screen({
 	}
 });
 
-Interactiv.debug = true;
+//Interactiv.debug = true;
 Interactiv.initialize();
 Interactiv.clear();
 Interactiv.focus(input1);

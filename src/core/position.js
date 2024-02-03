@@ -38,13 +38,13 @@ class Position {
 		this.paddingLeft = paddingLeft;
 		this.labelOriginX = labelOriginX;
 
-		this.scrollY = 0;
-		this.scrollHeight = 0;
+		this._scrollY = 0;
+		this._scrollHeight = 0;
 
-		this.innerX = x;
-		this.innerY = y;
-		this.innerWidth = width;
-		this.innerHeight = height;
+		this._innerX = x;
+		this._innerY = y;
+		this._innerWidth = width;
+		this._innerHeight = height;
 
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
@@ -109,27 +109,31 @@ class Position {
 
 		computed.labelOriginX = labelOriginX || originX;
 		if (!parentPosition) {
+			computed._innerX = x;
+			computed._innerY = y;
+			computed._innerWidth = width;
+			computed._innerHeight = height;
 			return computed;
 		}
 		//Get the relative position, only use the previous child's position if it has the same origin
 		const previousChildSameOrigin = previousChildPosition && previousChildPosition.originX === originX && previousChildPosition.originY === originY;
-		const relativeY = previousChildSameOrigin ? previousChildPosition.y + previousChildPosition.height : parentPosition.innerY;
+		const relativeY = previousChildSameOrigin ? previousChildPosition.y + previousChildPosition.height : parentPosition._innerY;
 
 		//Width/Height
-		computed.width = this.calcDimension(width, parentPosition.innerWidth, marginLeft + marginRight);
-		computed.height = this.calcDimension(height, parentPosition.innerHeight, marginTop + marginBottom);
+		computed.width = this.calcDimension(width, parentPosition._innerWidth, marginLeft + marginRight);
+		computed.height = this.calcDimension(height, parentPosition._innerHeight, marginTop + marginBottom);
 
 		//Origin X
-		computed.x = parentPosition.innerX + x + marginLeft;
+		computed.x = parentPosition._innerX + x + marginLeft;
 		switch (originX) {
 			case ORIGIN.X.LEFT:
 				computed.x += 0;
 				break;
 			case ORIGIN.X.CENTER:
-				computed.x += Math.floor((parentPosition.innerWidth - computed.width) * 0.5);
+				computed.x += Math.floor((parentPosition._innerWidth - computed.width) * 0.5);
 				break;
 			case ORIGIN.X.RIGHT:
-				computed.x += parentPosition.innerWidth - computed.width - marginRight;
+				computed.x += parentPosition._innerWidth - computed.width - marginRight;
 				break;
 		}
 
@@ -140,10 +144,10 @@ class Position {
 				computed.y += 0;
 				break;
 			case ORIGIN.Y.CENTER:
-				computed.y += Math.floor((parentPosition.innerHeight - computed.height) * 0.5);
+				computed.y += Math.floor((parentPosition._innerHeight - computed.height) * 0.5);
 				break;
 			case ORIGIN.Y.BOTTOM:
-				computed.y += parentPosition.innerHeight - computed.height - marginBottom;
+				computed.y += parentPosition._innerHeight - computed.height - marginBottom;
 				break;
 		}
 		//Collapse margins
@@ -152,10 +156,10 @@ class Position {
 		}
 
 		//Inner
-		computed.innerX = computed.x + borderSize + paddingLeft;
-		computed.innerY = computed.y + borderSize + paddingTop;
-		computed.innerWidth = computed.width - borderSize * 2 - paddingLeft - paddingRight;
-		computed.innerHeight = computed.height - borderSize * 2 - paddingTop - paddingBottom;
+		computed._innerX = computed.x + borderSize + paddingLeft;
+		computed._innerY = computed.y + borderSize + paddingTop;
+		computed._innerWidth = computed.width - borderSize * 2 - paddingLeft - paddingRight;
+		computed._innerHeight = computed.height - borderSize * 2 - paddingTop - paddingBottom;
 
 		return computed;
 	}
@@ -169,7 +173,7 @@ class Position {
 	}
 
 	getScrollContentRange() {
-		const {y, innerY, innerHeight, scrollY, scrollHeight} = this;
+		const {y, _innerY: innerY, _innerHeight: innerHeight, _scrollY: scrollY, _scrollHeight: scrollHeight} = this;
 		const contentY = innerY - y - scrollY;
 		const contentBottom = contentY + innerHeight;
 		const newY = Math.max(y + contentY, y);

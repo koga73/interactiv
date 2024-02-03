@@ -52,7 +52,7 @@ class ScrollBar extends Component {
 		}
 		const {_computedPosition, scrollPosition} = this;
 
-		const {innerHeight: height} = _computedPosition;
+		const {_innerHeight: height} = _computedPosition;
 		const childrenHeight = this._children.reduce((acc, child) => acc + child._computedPosition.height, 0);
 
 		const needsScroll = childrenHeight > height;
@@ -62,14 +62,14 @@ class ScrollBar extends Component {
 			this._scrollStep = 0;
 		}
 		this._children.forEach((child) => {
-			child._computedPosition.scrollY = needsScroll ? Math.floor(scrollPosition * (childrenHeight - height)) : 0;
-			child._computedPosition.scrollHeight = needsScroll ? height : 0;
+			child._computedPosition._scrollY = needsScroll ? Math.floor(scrollPosition * (childrenHeight - height)) : 0;
+			child._computedPosition._scrollHeight = needsScroll ? height : 0;
 		});
 	}
 
 	drawSelf() {
 		const {scrollPosition, _computedPosition, _computedStyle} = this;
-		const {innerX: x, innerY: y, innerWidth: width, innerHeight: height} = _computedPosition;
+		const {_innerX: x, _innerY: y, _innerWidth: width, _innerHeight: height} = _computedPosition;
 		const {trackCharacter, trackColor, thumbCharacter, thumbColor} = _computedStyle;
 
 		const {stdout} = process;

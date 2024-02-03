@@ -72,7 +72,7 @@ class Button extends Component {
 	}
 
 	drawSelf() {
-		const {innerX: x, innerY: y} = this._computedPosition;
+		const {_innerX: x, _innerY: y} = this._computedPosition;
 		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;

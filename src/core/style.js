@@ -59,12 +59,14 @@ class Style {
 			if (!this.shouldCopyProp(prop)) {
 				continue;
 			}
+			const propVal = fromStyle[prop];
 			if (soft) {
-				style[prop] = style._extended[prop] ?? fromStyle[prop];
+				style[prop] = typeof style._extended[prop] !== typeof undefined ? style._extended[prop] : propVal;
 			} else {
-				style[prop] = fromStyle[prop] ?? style[prop];
-				if (fromStyle[prop]) {
-					style._extended[prop] = fromStyle[prop];
+				const isFromDefined = typeof propVal !== typeof undefined;
+				style[prop] = isFromDefined ? propVal : style[prop];
+				if (isFromDefined) {
+					style._extended[prop] = propVal;
 				}
 			}
 		}

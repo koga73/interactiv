@@ -48,7 +48,7 @@ class Text extends Component {
 		if (!this._needsRender) {
 			return;
 		}
-		const width = this.position.calcDimension(this.position.width, parentDetails.parentComputedPosition.innerWidth, this.position.marginLeft + this.position.marginRight);
+		const width = this.position.calcDimension(this.position.width, parentDetails.parentComputedPosition._innerWidth, this.position.marginLeft + this.position.marginRight);
 		this._lines = this.wordWrap(this.value, width);
 		overrides.width = width;
 
@@ -64,7 +64,7 @@ class Text extends Component {
 	}
 
 	drawSelf() {
-		const {innerX: x} = this._computedPosition;
+		const {_innerX: x} = this._computedPosition;
 		const {y, height, contentY} = this._computedPosition.getScrollContentRange();
 		const {backgroundColor, color, underline} = this._computedStyle;
 

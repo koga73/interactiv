@@ -82,7 +82,7 @@ class Input extends Component {
 	}
 
 	drawSelf() {
-		const {innerX: x, innerY: y, innerWidth: width} = this._computedPosition;
+		const {_innerX: x, _innerY: y, _innerWidth: width} = this._computedPosition;
 		const {backgroundColor, color, underline} = this._computedStyle;
 
 		const {stdout} = process;

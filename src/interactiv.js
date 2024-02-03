@@ -239,3 +239,5 @@ Theme.Ocean = new ThemeOcean();
 Theme.LavaBit = new ThemeLavaBit();
 Theme.Marble = new ThemeMarble();
 export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit, ThemeMarble};
+
+export {RenderLog};
