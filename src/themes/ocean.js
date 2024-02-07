@@ -27,8 +27,12 @@ class Ocean extends Theme {
 			border: BORDER.SINGLE,
 			borderColor: COLORS.FG.CYAN,
 			labelColor: COLORS.FG.CYAN_BRIGHT,
-			selectedBackgroundColor: COLORS.BG.CYAN,
-			selectedColor: COLORS.FG.BLACK
+			selectedBackgroundColor: COLORS.BG.BLACK,
+			selectedColor: COLORS.FG.CYAN,
+			selectedUnderline: true,
+			activeBackgroundColor: COLORS.BG.CYAN,
+			activeColor: COLORS.FG.BLACK,
+			activeUnderline: false
 		}),
 		ScrollBar: new Style({
 			border: BORDER.SINGLE,

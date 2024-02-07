@@ -27,8 +27,12 @@ class XTree extends Theme {
 			border: BORDER.SINGLE,
 			borderColor: COLORS.FG.CYAN_BRIGHT,
 			labelColor: COLORS.FG.CYAN_BRIGHT,
-			selectedBackgroundColor: COLORS.BG.WHITE_BRIGHT,
-			selectedColor: COLORS.FG.BLUE
+			selectedBackgroundColor: COLORS.BG.BLUE,
+			selectedColor: COLORS.FG.WHITE_BRIGHT,
+			selectedUnderline: true,
+			activeBackgroundColor: COLORS.BG.WHITE_BRIGHT,
+			activeColor: COLORS.FG.BLUE,
+			activeUnderline: false
 		}),
 		ScrollBar: new Style({
 			border: BORDER.SINGLE,

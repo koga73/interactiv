@@ -21,8 +21,12 @@ class Space extends Theme {
 		}),
 		List: new Style({
 			border: BORDER.SINGLE,
-			selectedBackgroundColor: COLORS.BG.WHITE,
-			selectedColor: COLORS.FG.BLACK
+			selectedBackgroundColor: COLORS.BG.BLACK,
+			selectedColor: COLORS.FG.WHITE,
+			selectedUnderline: true,
+			activeBackgroundColor: COLORS.BG.WHITE,
+			activeColor: COLORS.FG.BLACK,
+			activeUnderline: false
 		}),
 		ScrollBar: new Style({
 			border: BORDER.SINGLE,
