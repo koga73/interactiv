@@ -104,7 +104,9 @@ class _class {
 			if (!(_class._focus && _class._focus.isRendered())) {
 				_class.focusFirst();
 			}
-			_class._focus.onFocus();
+			if (_class._focus) {
+				_class._focus.onFocus();
+			}
 
 			//Debug
 			if (_class.debug) {
@@ -135,7 +137,10 @@ class _class {
 
 	static focus(component) {
 		if (!component.focusable) {
-			throw new Error("Not focusable");
+			throw new Error(`${component.id} - Not focusable`);
+		}
+		if (!component.isRendered()) {
+			throw new Error(`${component.id} - Not rendered`);
 		}
 		if (_class._focus && _class._focus !== component) {
 			RenderLog.log(`'${_class._focus.id}' - blur`);
