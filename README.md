@@ -11,6 +11,7 @@ Build colorful complex layouts in the console!
 -   Simple styling and built-in theming
 -   Keyboard navigation and focus management
 -   Screen and log swapping
+-   No dependencies!
 
 ## Installation
 
@@ -630,15 +631,14 @@ The main static interface for rendering components to the console.
 -   **focusNext**() | Focuses on the next focusable component
 -   **exit**() | Clear and reset the console and then terminate the process
 
-## Icons
+## TODO
 
-TODO: Add icons to the project?
-
-https://symbl.cc/en/
-
-### Example: Unicode _Star_
-
-`\u2606`
+-   Break out the render log into its own component
+-   Add Checkbox component
+-   Add Radio component
+-   Add icons to the project?
+    -   https://symbl.cc/en/
+    -   Example: Unicode _Star_ = `\u2606`
 
 ## Known issues
 

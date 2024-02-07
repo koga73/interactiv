@@ -30,7 +30,7 @@ const inputPass = new Input({
 	position: Input.DEFAULT_POSITION.extend({
 		marginTop: 1,
 		marginRight: 2,
-		marginBottom: 1,
+		marginBottom: 2,
 		marginLeft: 2
 	}),
 	onChange: ({value}) => {
@@ -52,6 +52,9 @@ const btnSubmit = new Button({
 const windowLogin = new Window({
 	id: "windowLogin",
 	label: " Login ",
+	position: Window.DEFAULT_POSITION.extend({
+		height: 0 //Auto
+	}),
 	children: [txtHeading, inputUser, inputPass, btnSubmit],
 	onSelect: () => {
 		//Called when enter is pressed on the window
