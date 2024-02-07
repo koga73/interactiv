@@ -18,7 +18,7 @@ class List extends Component {
 		focusStyle = null,
 		items = [],
 		selectedIndex = -1,
-		activeIndex = 0,
+		activeIndex = -1,
 		autoSelect = false,
 		onSelect = null,
 		onChange = null
@@ -44,10 +44,10 @@ class List extends Component {
 		this._longestItem = 0;
 		this._reactiveProps = [...this._reactiveProps, "items", "selectedIndex", "activeIndex"];
 
-		this.gotoPrevious = this.gotoPrevious.bind(this);
-		this.gotoNext = this.gotoNext.bind(this);
-		this.gotoIndex = this.gotoIndex.bind(this);
-		this._selectIndex = this._selectIndex.bind(this);
+		this.gotoActivePrevious = this.gotoActivePrevious.bind(this);
+		this.gotoActiveNext = this.gotoActiveNext.bind(this);
+		this.gotoActiveIndex = this.gotoActiveIndex.bind(this);
+		this.selectIndex = this.selectIndex.bind(this);
 	}
 
 	clone() {
@@ -97,7 +97,7 @@ class List extends Component {
 		const {items, selectedIndex, activeIndex, _computedPosition, _computedStyle, _longestItem} = this;
 		const {_innerX: x} = _computedPosition;
 		const {y, height, contentY} = _computedPosition.getScrollContentRange();
-		const {backgroundColor, color, selectedBackgroundColor, selectedColor} = _computedStyle;
+		const {backgroundColor, color, underline, selectedBackgroundColor, selectedColor, selectedUnderline, activeBackgroundColor, activeColor, activeUnderline} = _computedStyle;
 
 		const {stdout} = process;
 		stdout.write(CURSOR.RESET);
@@ -106,24 +106,31 @@ class List extends Component {
 
 		for (let i = 0; i < height; i++) {
 			const itemIndex = contentY + i;
-			switch (itemIndex) {
-				case selectedIndex:
-					stdout.write(CURSOR.RESET);
-					stdout.write(selectedBackgroundColor);
-					stdout.write(selectedColor);
-					break;
-				case activeIndex:
-					stdout.write(CURSOR.RESET);
+
+			//No switch here since itemIndex can be selectedIndex AND activeIndex
+			if (itemIndex === selectedIndex + 1 || itemIndex === activeIndex + 1) {
+				stdout.write(CURSOR.RESET);
+				stdout.write(backgroundColor);
+				stdout.write(color);
+				if (underline) {
 					stdout.write(CURSOR.UNDERLINE);
-					stdout.write(backgroundColor);
-					stdout.write(color);
-					break;
-				case selectedIndex + 1:
-				case activeIndex + 1:
-					stdout.write(CURSOR.RESET);
-					stdout.write(backgroundColor);
-					stdout.write(color);
-					break;
+				}
+			}
+			if (itemIndex === selectedIndex) {
+				stdout.write(CURSOR.RESET);
+				stdout.write(selectedBackgroundColor);
+				stdout.write(selectedColor);
+				if (selectedUnderline) {
+					stdout.write(CURSOR.UNDERLINE);
+				}
+			}
+			if (itemIndex === activeIndex) {
+				stdout.write(CURSOR.RESET);
+				stdout.write(activeBackgroundColor);
+				stdout.write(activeColor);
+				if (activeUnderline) {
+					stdout.write(CURSOR.UNDERLINE);
+				}
 			}
 
 			stdout.cursorTo(x, y + i);
@@ -136,18 +143,18 @@ class List extends Component {
 		stdout.cursorTo(x, y + (activeIndex - contentY));
 	}
 
-	gotoPrevious() {
-		this.gotoIndex(this.activeIndex - 1);
+	gotoActivePrevious() {
+		this.gotoActiveIndex(this.activeIndex - 1);
 	}
 
-	gotoNext() {
-		this.gotoIndex(this.activeIndex + 1);
+	gotoActiveNext() {
+		this.gotoActiveIndex(this.activeIndex + 1);
 	}
 
-	gotoIndex(index) {
-		const newIndex = Math.max(0, Math.min(this.items.length - 1, index));
-		if (newIndex !== this.activeIndex) {
-			this.activeIndex = newIndex;
+	gotoActiveIndex(index) {
+		const newActiveIndex = Math.max(0, Math.min(this.items.length - 1, index));
+		if (newActiveIndex !== this.activeIndex) {
+			this.activeIndex = newActiveIndex;
 			if (this.onChange) {
 				this.onChange({
 					activeIndex: this.activeIndex,
@@ -155,12 +162,12 @@ class List extends Component {
 				});
 			}
 			if (this.autoSelect) {
-				this._selectIndex(this.activeIndex);
+				this.selectIndex(this.activeIndex);
 			}
 		}
 	}
 
-	_selectIndex(index) {
+	selectIndex(index) {
 		this.selectedIndex = index;
 		if (this.onSelect) {
 			this.onSelect({
@@ -173,19 +180,19 @@ class List extends Component {
 	onKeyPress(str, key) {
 		switch (key.name) {
 			case "up":
-				this.gotoPrevious();
+				this.gotoActivePrevious();
 				if (this._parent) {
 					this._parent.onKeyPress(str, key);
 				}
 				break;
 			case "down":
-				this.gotoNext();
+				this.gotoActiveNext();
 				if (this._parent) {
 					this._parent.onKeyPress(str, key);
 				}
 				break;
 			case "return":
-				this._selectIndex(this.activeIndex);
+				this.selectIndex(this.activeIndex);
 				break;
 			default:
 				if (this._parent) {

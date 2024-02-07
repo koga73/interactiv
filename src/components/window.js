@@ -46,6 +46,25 @@ class Window extends Component {
 		});
 	}
 
+	compute(params, options) {
+		super.compute(params, options);
+		if (!this._needsRender) {
+			return;
+		}
+		const {position, _computedPosition, _children} = this;
+		const childrenLen = _children.length;
+		if (_computedPosition.height <= 0 && childrenLen > 0) {
+			//TODO: Don't change original height value
+			position.height = _children.reduce((acc, child) => {
+				const {_computedPosition: childPosition} = child;
+				return acc + childPosition.marginTop + childPosition.height + childPosition.marginBottom;
+			}, 0);
+
+			//Recompute
+			super.compute(params, {...options, force: true});
+		}
+	}
+
 	onKeyPress(str, key) {
 		switch (key.name) {
 			case "return":

@@ -40,8 +40,12 @@ class Marble extends Theme {
 			borderColor: COLORS.FG.BLACK_BRIGHT,
 			labelBackgroundColor: COLORS.BG.WHITE,
 			labelColor: COLORS.FG.BLACK,
-			selectedBackgroundColor: COLORS.BG.BLACK_BRIGHT,
-			selectedColor: COLORS.FG.WHITE
+			selectedBackgroundColor: COLORS.BG.WHITE,
+			selectedColor: COLORS.FG.BLACK_BRIGHT,
+			selectedUnderline: true,
+			activeBackgroundColor: COLORS.BG.BLACK_BRIGHT,
+			activeColor: COLORS.FG.WHITE,
+			activeUnderline: false
 		}),
 		ScrollBar: new Style({
 			backgroundColor: COLORS.BG.WHITE_BRIGHT,
@@ -71,7 +75,13 @@ class Marble extends Theme {
 		List: new Style({
 			backgroundColor: COLORS.BG.WHITE_BRIGHT,
 			border: BORDER.SINGLE,
-			borderBackgroundColor: COLORS.BG.WHITE_BRIGHT
+			borderBackgroundColor: COLORS.BG.WHITE_BRIGHT,
+			selectedBackgroundColor: COLORS.BG.WHITE,
+			selectedColor: COLORS.FG.BLACK_BRIGHT,
+			selectedUnderline: true,
+			activeBackgroundColor: COLORS.BG.BLACK_BRIGHT,
+			activeColor: COLORS.FG.WHITE,
+			activeUnderline: false
 		}),
 		ScrollBar: new Style({
 			backgroundColor: COLORS.BG.WHITE_BRIGHT,

@@ -49,6 +49,7 @@ class Position {
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
+		this.calcInner = this.calcInner.bind(this);
 		this.calcDimension = this.calcDimension.bind(this);
 		this.getScrollContentRange = this.getScrollContentRange.bind(this);
 		this.shouldCopyProp = this.shouldCopyProp.bind(this);
@@ -88,24 +89,7 @@ class Position {
 
 	compute(parentPosition, {previousChildPosition = null, intoPosition = null} = {}, overrides = {}) {
 		const computed = this.clone(intoPosition);
-		const {
-			originX,
-			originY,
-			x,
-			y,
-			width,
-			height,
-			marginTop,
-			marginRight,
-			marginBottom,
-			marginLeft,
-			borderSize,
-			paddingTop,
-			paddingRight,
-			paddingBottom,
-			paddingLeft,
-			labelOriginX
-		} = Object.assign({}, computed, overrides);
+		const {originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX} = Object.assign({}, computed, overrides);
 
 		computed.labelOriginX = labelOriginX || originX;
 		if (!parentPosition) {
@@ -155,13 +139,20 @@ class Position {
 			computed.y += Math.abs(previousChildPosition.marginBottom - marginTop);
 		}
 
-		//Inner
+		this.calcInner(computed, overrides);
+
+		return computed;
+	}
+
+	calcInner(computed, overrides) {
+		if (!computed) {
+			computed = this;
+		}
+		const {borderSize, paddingTop, paddingRight, paddingBottom, paddingLeft} = Object.assign({}, computed, overrides);
 		computed._innerX = computed.x + borderSize + paddingLeft;
 		computed._innerY = computed.y + borderSize + paddingTop;
 		computed._innerWidth = computed.width - borderSize * 2 - paddingLeft - paddingRight;
 		computed._innerHeight = computed.height - borderSize * 2 - paddingTop - paddingBottom;
-
-		return computed;
 	}
 
 	calcDimension(input, parentSize, margin) {
