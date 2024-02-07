@@ -48,7 +48,8 @@ class Text extends Component {
 		}
 		const {position, value} = this;
 		if (position.width <= 0) {
-			overrides.width = position.calcDimension(value.length, parentDetails.parentComputedPosition._innerWidth, position.marginLeft + position.marginRight);
+			const parentInnerWidth = parentDetails.parentComputedPosition._innerWidth;
+			overrides.width = position.calcDimension(Math.min(value.length, parentInnerWidth), parentInnerWidth, position.marginLeft + position.marginRight);
 		}
 		this._lines = this.wordWrap(value, position.width || overrides.width);
 
@@ -91,7 +92,7 @@ class Text extends Component {
 				for (let i = 0; i < wordsLen; i++) {
 					const word = words[i];
 					if (newLine.length + word.length > charsPerLine) {
-						lines.push(newLine);
+						lines.push(newLine.trim());
 						newLine = word + " ";
 					} else {
 						newLine += word + " ";
