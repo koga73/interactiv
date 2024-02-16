@@ -1,3 +1,7 @@
+# 0.3.1
+
+-   Updated documentation and added logger options to the main initialize fuunction
+
 # 0.3.0
 
 -   Wired up a more advanced logger that can be used to log to memory, the console, or a file
