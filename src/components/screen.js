@@ -1,6 +1,5 @@
 import Component from "../core/component.js";
 import Position from "../core/position.js";
-
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Screen extends Component {
