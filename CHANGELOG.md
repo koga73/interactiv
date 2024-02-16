@@ -1,3 +1,7 @@
+# 0.3.0
+
+-   Wired up a more advanced logger that can be used to log to memory, the console, or a file
+
 # 0.2.0
 
 -   Fixed issue with Text component not wrapping properly

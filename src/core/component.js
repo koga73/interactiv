@@ -1,7 +1,7 @@
 import {ROOT, ORIGIN, CURSOR} from "./constants.js";
 import Position from "./position.js";
 import Style from "./style.js";
-import RenderLog from "./render-log.js";
+import Logger from "../utils/logger.js";
 
 //Note: position is relative, computedPosition is absolute
 class Component {
@@ -75,7 +75,7 @@ class Component {
 
 	compute(params, {force = false, delta = 0, debug = false} = {}) {
 		if (debug && force) {
-			RenderLog.log(`'${this.id}' - force render`);
+			Logger.debug(`'${this.id}' - force render`);
 		}
 		this._needsRender = force ? true : this.needsRender(false, debug);
 		if (this._needsRender) {
@@ -349,7 +349,7 @@ class Component {
 				if (child instanceof Component) {
 					if (child.needsRender(true)) {
 						if (debug) {
-							RenderLog.log(`'${id}' - needsRender - child: '${child.id}'`);
+							Logger.debug(`'${id}' - needsRender - child: '${child.id}'`);
 						}
 						return true;
 					}
@@ -362,7 +362,7 @@ class Component {
 			const prop = reactiveProps[i];
 			if (this[prop] !== this._lastState[prop]) {
 				if (debug) {
-					RenderLog.log(`'${id}' - needsRender - '${prop}'`);
+					Logger.debug(`'${id}' - needsRender - '${prop}'`);
 				}
 				return true;
 			}

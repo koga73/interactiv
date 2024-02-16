@@ -10,7 +10,7 @@ import {Button, Input, List, Screen, ScrollBar, Text, Window} from "./components
 import Theme from "./core/theme.js";
 import {Space as ThemeSpace, XTree as ThemeXTree, Ocean as ThemeOcean, LavaBit as ThemeLavaBit, Marble as ThemeMarble} from "./themes/index.js";
 
-import RenderLog from "./core/render-log.js";
+import Logger from "./utils/logger.js";
 import NormalTimer from "./utils/normal-timer.js";
 
 class _class {
@@ -40,6 +40,11 @@ class _class {
 
 		//Handle window resize
 		process.on("SIGWINCH", _class._handler_resize);
+
+		Logger.createInstance({
+			output: Logger.OUTPUT.MEMORY,
+			level: Logger.LEVEL.DEBUG
+		});
 	}
 
 	static destroy() {
@@ -57,6 +62,8 @@ class _class {
 		process.stdout.cursorTo(0, rows - 1);
 		process.stdout.write(CURSOR.RESET);
 		_class.clear();
+
+		Logger.destroyInstance();
 	}
 
 	static clear() {
@@ -110,14 +117,16 @@ class _class {
 
 			//Debug
 			if (_class.debug) {
-				RenderLog.log("RENDER COMPLETE!\n");
+				Logger.debug("RENDER COMPLETE!\n");
 			}
 		}
 
 		process.nextTick(() => process.stdout.uncork());
 	}
 
-	static showLog() {
+	static showLog(messages = null) {
+		messages = messages ? messages : Logger.getInstance().memory;
+
 		_class.paused = true;
 
 		process.stdout.cork();
@@ -125,7 +134,7 @@ class _class {
 		process.stdout.cursorTo(0, 0);
 		process.stdout.write(CURSOR.RESET);
 		_class.clear();
-		RenderLog.messages.map((message) => console.log(message));
+		messages.map((message) => console.log(message));
 
 		process.nextTick(() => process.stdout.uncork());
 	}
@@ -143,10 +152,10 @@ class _class {
 			throw new Error(`${component.id} - Not rendered`);
 		}
 		if (_class._focus && _class._focus !== component) {
-			RenderLog.log(`'${_class._focus.id}' - blur`);
+			Logger.debug(`'${_class._focus.id}' - blur`);
 			_class._focus.onBlur();
 		}
-		RenderLog.log(`'${component.id}' - focus`);
+		Logger.debug(`'${component.id}' - focus`);
 		_class._focus = component;
 	}
 
@@ -245,4 +254,4 @@ Theme.LavaBit = new ThemeLavaBit();
 Theme.Marble = new ThemeMarble();
 export {Theme, ThemeSpace, ThemeXTree, ThemeOcean, ThemeLavaBit, ThemeMarble};
 
-export {RenderLog};
+export {Logger, NormalTimer};
