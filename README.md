@@ -287,6 +287,34 @@ const btnSubmit = new Button({
 
 -   **onSelect**() | Called when the enter key is pressed on the button
 
+## DeluxeCLI API
+
+The main static interface for rendering components to the console.
+
+### DeluxeCLI Constants
+
+-   DEFAULT_FPS | 10 | The default frames per second
+-   DEFAULT_AUTO_UPDATE | true | Whether to automatically re-render on reactive prop updates
+
+### DeluxeCLI Properties
+
+-   **debug** | Optional default: false | boolean | Whether to log debug information to the console
+-   **paused** | Optional default: false | boolean | Whether to pause rendering
+
+### DeluxeCLI Methods
+
+-   **initialize**({fps = DEFAULT_FPS, autoUpdate = DEFAULT_AUTO_UPDATE} = {}) | Initializes the console for rendering
+-   **destroy**() | Destroys the console rendering
+-   **clear**() | Clears the screen
+-   **getWindowSize**() | Returns the size of the console window
+-   **render**(screen, force = false) | Renders the sccreen to the console
+-   **showLog**(messages = null) | Shows messages from the render log and hides the screen
+-   **hideLog**() | Hides the render log and shows the screen
+-   **focus**(component) | Focuses on a focusable component
+-   **focusFirst**() | Focuses on the first focusable component
+-   **focusNext**() | Focuses on the next focusable component
+-   **exit**() | Clear and reset the console and then terminate the process
+
 ## Core
 
 The following core classes are used to build the components.
@@ -307,7 +335,6 @@ The following core classes are used to build the components.
     -   [BORDER](#border)
     -   [CURSOR](#cursor)
     -   [COLORS](#colors)
--   [RenderLog](#renderlog)
 
 ### Component
 
@@ -603,37 +630,105 @@ DeluxeCLI.onKeyPress = (str, key) => {
 };
 ```
 
-## DeluxeCLI API
+## Utils
 
-The main static interface for rendering components to the console.
+The following utility classes are available
 
-### DeluxeCLI Constants
+-   [Logger](#logger)
+-   [NormalTimer](#normaltimer)
 
--   DEFAULT_FPS | 10 | The default frames per second
--   DEFAULT_AUTO_UPDATE | true | Whether to automatically re-render on reactive prop updates
+### Logger
 
-### DeluxeCLI Properties
+This class is used to log messages to memory/console/file with different levels of severity. A singleton is created by DeluxeCLI.initialize() and you can log directly to this instance via static methods. All instance methods are available on the static instance. Use _Logger.getInstance()_ to get the instance if needed for advanced usage.
 
--   **debug** | Optional default: false | boolean | Whether to log debug information to the console
--   **paused** | Optional default: false | boolean | Whether to pause rendering
+#### Logger Static Constants
 
-### DeluxeCLI Methods
+-   **LEVEL** | The levels of the logger
 
--   **initialize**({fps = DEFAULT_FPS, autoUpdate = DEFAULT_AUTO_UPDATE} = {}) | Initializes the console for rendering
--   **destroy**() | Destroys the console rendering
--   **clear**() | Clears the screen
--   **getWindowSize**() | Returns the size of the console window
--   **render**(screen, force = false) | Renders the sccreen to the console
--   **showLog**() | Shows the render log and hides the screen
--   **hideLog**() | Hides the render log and shows the screen
--   **focus**(component) | Focuses on a focusable component
--   **focusFirst**() | Focuses on the first focusable component
--   **focusNext**() | Focuses on the next focusable component
--   **exit**() | Clear and reset the console and then terminate the process
+    -   **LEVEL.DEBUG** = 0
+    -   **LEVEL.INFO** = 1
+    -   **LEVEL.LOG** = 2
+    -   **LEVEL.WARN** = 3
+    -   **LEVEL.ERROR** = 4
+
+-   **OUTPUT** | The outputs of the logger
+
+    -   **OUTPUT.MEMORY** = 1
+    -   **OUTPUT.CONSOLE** = 2
+    -   **OUTPUT.FILE** = 4
+
+-   **TOKEN** | The tokens for formats
+
+    -   **TOKEN.LEVEL** = "level"
+    -   **TOKEN.TIMESTAMP** = "timestamp"
+    -   **TOKEN.MESSAGE** = "message"
+    -   **TOKEN.STACK** = "stack"
+
+-   **FORMAT** | The formats for the logger
+    -   **FORMAT.TIMESTAMP** = "YYYY-MM-DD HH:mm:ss.SSS"
+    -   **FORMAT.FILENAME** = "YYYY-MM-DD.log"
+    -   **FORMAT.MEMORY** = "level: message"
+    -   **FORMAT.CONSOLE** = "message"
+    -   **FORMAT.FILE** = "\[timestamp\] \[level\] message\n"
+    -   **FORMAT.ERROR_MESSAGE** = "message\n stack\n"
+
+#### Logger Static Methods
+
+-   **createInstance**(options) | Create a new instance of the logger
+-   **destroyInstance**() | Destroy the instance of the logger
+-   **getInstance**() | Get the instance of the logger
+
+Note: After creating an instance, the instance methods are available statically on the Logger class.
+
+#### Logger Properties
+
+-   **output** | Required default: Logger.OUTPUT.CONSOLE | number | Bitmask of the log outputs such as Logger.OUTPUT.CONSOLE | Logger.OUTPUT.FILE
+-   **level** | Required default: Logger.LEVEL.INFO | number | The level of the logger
+-   **levelMemory** | Optional default: null | number | The level of the memory logger
+-   **levelConsole** | Optional default: null | number | The level of the console logger
+-   **levelFile** | Optional default: null | number | The level of the file logger
+-   **filePath** | Optional default: null | string | The file directory to write logs to
+-   **formatFileName** | Optional default: "YYYY-MM-DD.log" | string | The format of the generated file name
+-   **formatTimestamp** | Optional default: "YYYY-MM-DD HH:mm:ss.SSS" | string | The format of the timestamp
+-   **formatMemory** | Optional default: "level: message" | string | The format when logging to memory
+-   **formatConsole** | Optional default: "message" | string | The format when logging to the console
+-   **formatFile** | Optional default: "\[timestamp\] \[level\] message\n" | string | The format when logging to a file
+-   **formatErrorMessage** | Optional default: "message\n stack\n" | string | The format when logging an error
+-   **memorySize** | Optional default: 100 | number | The number of messages to keep in memory
+
+#### Logger Methods
+
+-   **debug**(...args) | Log a debug message
+-   **info**(...args) | Log an info message
+-   **log**(...args) | Log a message
+-   **warn**(...args) | Log a warning message
+-   **error**(...args) | Log an error message
+-   **doLog**(level, ...args) | Log a message with the given level
+-   **toMemory**(level, ...args) | Log a message to memory
+-   **toConsole**(level, ...args) | Log a message to the console
+-   **toFile**(level, ...args) | Log a message to a file
+-   **clearMemory**() | Clear the memory log
+-   **\_formatMessage**(format, level, ...args) | Format a message
+-   **\_formatError**(format = Logger.FORMAT.ERROR_MESSAGE, err) | Format an error message
+-   **\_formatFileName**(format = Logger.FORMAT.FILENAME) | Format a file name
+-   **\_formatTimestamp**(format = Logger.FORMAT.TIMESTAMP) | Format a timestamp
+
+### NormalTimer
+
+A class used to measure time differences in milliseconds.
+
+#### NormalTimer Properties
+
+-   **startTime** | The start time in milliseconds
+-   **lastTime** | The last time in milliseconds
+
+#### NormalTimer Methods
+
+-   **elapsed**() | Returns the time elapsed since the start time
+-   **tick**() | Returns the time elapsed since the last time and sets the last time to the current time
 
 ## TODO
 
--   Break out the render log into its own component
 -   Add Checkbox component
 -   Add Radio component
 -   Add icons to the project?

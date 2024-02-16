@@ -130,8 +130,8 @@ const screen = new Screen({
 DeluxeCLI.debug = true;
 DeluxeCLI.initialize();
 DeluxeCLI.clear();
-DeluxeCLI.focus(input1);
 DeluxeCLI.render(screen);
+DeluxeCLI.focus(input1);
 
 let showingLog = false;
 DeluxeCLI.onKeyPress = (str, key) => {

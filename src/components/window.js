@@ -1,7 +1,6 @@
 import Component from "../core/component.js";
 import Position from "../core/position.js";
 import {ORIGIN} from "../core/constants.js";
-
 import {DEFAULT as ThemeDefault} from "../themes/index.js";
 
 class Window extends Component {
