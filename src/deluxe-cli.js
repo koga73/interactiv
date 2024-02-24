@@ -1,6 +1,6 @@
 import readline from "readline";
 
-import {ROOT, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
+import {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
 import Position from "./core/position.js";
 import Style from "./core/style.js";
 import Component from "./core/component.js";
@@ -247,7 +247,7 @@ class _class {
 }
 
 export default _class;
-export {ROOT, ORIGIN, BORDER, CURSOR, COLORS};
+export {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
 export {Screen, Window, Text, Input, Button, List, ScrollBar};
 

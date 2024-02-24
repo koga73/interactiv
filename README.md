@@ -331,6 +331,7 @@ The following core classes are used to build the components.
         -   [Marble](#marble)
 -   [Constants](#constants)
     -   [ROOT](#root)
+    -   [POSITION](#position)
     -   [ORIGIN](#origin)
     -   [BORDER](#border)
     -   [CURSOR](#cursor)
@@ -501,6 +502,17 @@ The root component id
 import {ROOT} from "deluxe-cli";
 console.log(ROOT); //"root"
 ```
+
+#### POSITION
+
+The position type
+
+```js
+import {POSITION} from "deluxe-cli";
+```
+
+-   **POSITION.RELATIVE** | "relative"
+-   **POSITION.ABSOLUTE** | "absolute"
 
 #### ORIGIN
 
@@ -729,8 +741,8 @@ A class used to measure time differences in milliseconds.
 
 ## TODO
 
--   Support x/y percents
 -   Add position relative/absolute
+-   Support x/y percents for absolute positioning
 -   Add ScrollBar List example
 -   Add colored Text value example
 -   Add Checkbox component

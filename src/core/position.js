@@ -1,8 +1,9 @@
-import {ORIGIN} from "./constants.js";
+import {POSITION, ORIGIN} from "./constants.js";
 
 //Basically an implementation of the CSS box model, but with a few differences such as no border since it's size is assumed to be 0 or 1
 class Position {
 	constructor({
+		type = POSITION.RELATIVE,
 		originX = ORIGIN.X.LEFT,
 		originY = ORIGIN.Y.TOP,
 		x = 0,
@@ -21,6 +22,7 @@ class Position {
 		labelOriginX = null,
 		...remaining
 	} = {}) {
+		this.type = type;
 		this.originX = originX;
 		this.originY = originY;
 		this.x = x;
@@ -89,7 +91,7 @@ class Position {
 
 	compute(parentPosition, {previousChildPosition = null, intoPosition = null} = {}, overrides = {}) {
 		const computed = this.clone(intoPosition);
-		const {originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX} = Object.assign({}, computed, overrides);
+		const {type, originX, originY, x, y, width, height, marginTop, marginRight, marginBottom, marginLeft, labelOriginX} = Object.assign({}, computed, overrides);
 
 		computed.labelOriginX = labelOriginX || originX;
 		if (!parentPosition) {
@@ -101,7 +103,7 @@ class Position {
 		}
 		//Get the relative position, only use the previous child's position if it has the same origin
 		const previousChildSameOrigin = previousChildPosition && previousChildPosition.originX === originX && previousChildPosition.originY === originY;
-		const relativeY = previousChildSameOrigin ? previousChildPosition.y + previousChildPosition.height : parentPosition._innerY;
+		const relativeY = type === POSITION.RELATIVE && previousChildSameOrigin ? previousChildPosition.y + previousChildPosition.height : parentPosition._innerY;
 
 		//Width/Height
 		computed.width = this.calcDimension(width, parentPosition._innerWidth, marginLeft + marginRight);
@@ -135,7 +137,7 @@ class Position {
 				break;
 		}
 		//Collapse margins
-		if (previousChildSameOrigin) {
+		if (type === POSITION.RELATIVE && previousChildSameOrigin) {
 			computed.y += Math.abs(previousChildPosition.marginBottom - marginTop);
 		}
 
