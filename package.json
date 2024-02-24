@@ -1,6 +1,6 @@
 {
 	"name": "deluxe-cli",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Build colorful complex layouts in the console!",
 	"main": "src/deluxe-cli.js",
 	"type": "module",
