@@ -106,7 +106,12 @@ class ScrollBar extends Component {
 		stdout.cursorTo(cursorStart[0], cursorStart[1] + thumbY);
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		if (this.onKeyPress) {
+			if (this.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "up":
 				this.scrollPosition = Math.max(0, this.scrollPosition - this._scrollStep);
@@ -114,9 +119,10 @@ class ScrollBar extends Component {
 			case "down":
 				this.scrollPosition = Math.min(1, this.scrollPosition + this._scrollStep);
 				break;
+			//TODO: Add page up and page down
 			default:
 				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+					this._parent._handlerKeyPress(str, key);
 				}
 				break;
 		}

@@ -17,7 +17,7 @@ class Button extends Component {
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Button.NAME];
 	static DEFAULT_FOCUS_STYLE = ThemeDefault.DEFAULT_FOCUS_MAP[Button.NAME];
 
-	constructor({id = "", label = "", position = null, style = null, focusStyle = null, value = "", onSelect = null}) {
+	constructor({id = "", label = "", position = null, style = null, focusStyle = null, value = "", onSelect = null, ...props}) {
 		super({
 			id,
 			label,
@@ -26,7 +26,8 @@ class Button extends Component {
 			focusStyle: focusStyle ? focusStyle : Button.DEFAULT_FOCUS_STYLE ? Button.DEFAULT_FOCUS_STYLE.clone() : null,
 			children: null,
 			position: position ? position : Button.DEFAULT_POSITION ? Button.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Button.DEFAULT_STYLE ? Button.DEFAULT_STYLE.clone() : null
+			style: style ? style : Button.DEFAULT_STYLE ? Button.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.value = value;
@@ -88,7 +89,12 @@ class Button extends Component {
 		stdout.cursorTo(cursorStart[0], cursorStart[1]);
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		if (this.onKeyPress) {
+			if (this.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "return":
 				if (this.onSelect) {
@@ -97,7 +103,7 @@ class Button extends Component {
 				break;
 			default:
 				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+					this._parent._handlerKeyPress(str, key);
 				}
 				break;
 		}

@@ -1,3 +1,7 @@
+# 0.4.0
+
+-   Added onKeyPress / onFocus / onBlur callbacks for all components with the option to return false to prevent the default action
+
 # 0.3.0
 
 -   Wired up a more advanced logger that can be used to log to memory, the console, or a file

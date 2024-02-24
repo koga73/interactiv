@@ -177,26 +177,32 @@ class List extends Component {
 		}
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		const {onKeyPress, gotoActivePrevious, gotoActiveNext, selectIndex, _parent} = this;
+		if (onKeyPress) {
+			if (onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "up":
-				this.gotoActivePrevious();
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				gotoActivePrevious();
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 			case "down":
-				this.gotoActiveNext();
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				gotoActiveNext();
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 			case "return":
-				this.selectIndex(this.activeIndex);
+				selectIndex(this.activeIndex);
 				break;
 			default:
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 		}
