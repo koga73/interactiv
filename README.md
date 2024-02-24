@@ -741,7 +741,6 @@ A class used to measure time differences in milliseconds.
 
 ## TODO
 
--   Add position relative/absolute
 -   Support x/y percents for absolute positioning
 -   Add ScrollBar List example
 -   Add colored Text value example
