@@ -1,6 +1,6 @@
 import readline from "readline";
 
-import {ROOT, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
+import {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
 import Position from "./core/position.js";
 import Style from "./core/style.js";
 import Component from "./core/component.js";
@@ -19,6 +19,8 @@ class _class {
 
 	static debug = false;
 	static paused = false;
+	static exitOnEscape = true;
+	static onKeyPress = null;
 
 	static _currentScreen = null;
 	static _focus = null;
@@ -26,7 +28,9 @@ class _class {
 	static _timer = null;
 	static _parentComputedPosition = new Position();
 
-	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE} = {}) {
+	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE, loggerOptions = null, exitOnEscape = true, onKeyPress = null} = {}) {
+		_class.exitOnEscape = exitOnEscape;
+		_class.onKeyPress = onKeyPress;
 		if (autoUpdate) {
 			_class._autoUpdateInterval = setInterval(_class.render, Math.floor(1000 / fps));
 			_class._timer = new NormalTimer();
@@ -41,10 +45,12 @@ class _class {
 		//Handle window resize
 		process.on("SIGWINCH", _class._handler_resize);
 
-		Logger.createInstance({
-			output: Logger.OUTPUT.MEMORY,
-			level: Logger.LEVEL.DEBUG
-		});
+		Logger.createInstance(
+			loggerOptions || {
+				output: Logger.OUTPUT.MEMORY,
+				level: _class.debug ? Logger.LEVEL.DEBUG : Logger.LEVEL.INFO
+			}
+		);
 	}
 
 	static destroy() {
@@ -112,7 +118,7 @@ class _class {
 				_class.focusFirst();
 			}
 			if (_class._focus) {
-				_class._focus.onFocus();
+				_class._focus._handlerFocus();
 			}
 
 			//Debug
@@ -152,10 +158,14 @@ class _class {
 			throw new Error(`${component.id} - Not rendered`);
 		}
 		if (_class._focus && _class._focus !== component) {
-			Logger.debug(`'${_class._focus.id}' - blur`);
-			_class._focus.onBlur();
+			if (_class.debug) {
+				Logger.debug(`'${_class._focus.id}' - blur`);
+			}
+			_class._focus._handlerBlur();
 		}
-		Logger.debug(`'${component.id}' - focus`);
+		if (_class.debug) {
+			Logger.debug(`'${component.id}' - focus`);
+		}
 		_class._focus = component;
 	}
 
@@ -202,6 +212,12 @@ class _class {
 	}
 
 	static _handler_keypress(str, key) {
+		if (_class.onKeyPress) {
+			if (_class.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
+
 		//ctrl+c to quit
 		if (key.ctrl === true && key.name === "c") {
 			_class.exit();
@@ -213,37 +229,37 @@ class _class {
 			return;
 		}
 
-		if (_class.onKeyPress) {
-			_class.onKeyPress(str, key);
-		}
-
 		//Exit on escape
 		if (_class._focus) {
 			switch (key.name) {
 				case "escape":
-					const focusList = _class._getFocusList(_class._currentScreen);
-					const focusIndex = focusList.findIndex(({component}) => component === _class._focus);
-					if (focusList[focusIndex].depth === 1) {
-						_class.exit();
+					if (_class.exitOnEscape) {
+						const focusList = _class._getFocusList(_class._currentScreen);
+						const focusIndex = focusList.findIndex(({component}) => component === _class._focus);
+						if (focusList[focusIndex].depth === 1) {
+							_class.exit();
+						}
 					}
 					break;
 			}
-			_class._focus.onKeyPress(str, key);
+			_class._focus._handlerKeyPress(str, key);
 		}
 	}
 
-	static exit() {
+	static exit(dontKillProcess = false) {
 		const {cols, rows} = _class.getWindowSize();
 		process.stdout.cursorTo(0, rows - 1);
 		process.stdout.write(CURSOR.RESET);
 		_class.clear();
 		console.log("");
-		process.exit();
+		if (!dontKillProcess) {
+			process.exit();
+		}
 	}
 }
 
 export default _class;
-export {ROOT, ORIGIN, BORDER, CURSOR, COLORS};
+export {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
 export {Screen, Window, Text, Input, Button, List, ScrollBar};
 

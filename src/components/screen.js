@@ -51,7 +51,12 @@ class Screen extends Component {
 		super.drawBackground();
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		if (this.onKeyPress) {
+			if (this.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "return":
 				if (this.onSelect) {

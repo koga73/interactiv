@@ -13,11 +13,52 @@ Build colorful complex layouts in the console!
 -   Screen and log swapping
 -   No dependencies!
 
+## Table of Contents
+
+-   [Features](#features)
+-   [Installation](#installation)
+-   [Usage](#usage)
+-   [Components](#components)
+    -   [Screen](#screen)
+    -   [Window](#window)
+    -   [Text](#text)
+    -   [Input](#input)
+    -   [List](#list)
+    -   [ScrollBar](#scrollbar)
+    -   [Button](#button)
+-   [DeluxeCLI API](#deluxecli-api)
+-   [Core](#core)
+    -   [Component](#component)
+    -   [Position](#position)
+    -   [Style](#style)
+    -   [Theme](#theme)
+        -   [Theme Built-in](#theme-built-in)
+            -   [Space](#space)
+            -   [XTree](#xtree)
+            -   [Ocean](#ocean)
+            -   [LavaBit](#lavabit)
+            -   [Marble](#marble)
+    -   [Constants](#constants)
+        -   [ROOT](#root)
+        -   [ORIGIN](#origin)
+        -   [BORDER](#border)
+        -   [CURSOR](#cursor)
+        -   [COLORS](#colors)
+-   [Utils](#utils)
+    -   [Logger](#logger)
+    -   [NormalTimer](#normaltimer)
+-   [TODO](#todo)
+-   [Known issues](#known-issues)
+
 ## Installation
 
 ```bash
 npm install deluxe-cli
 ```
+
+## Usage
+
+Reference the [Screen Usage](#screen-usage) example below
 
 ## Components
 
@@ -123,7 +164,7 @@ const txtHeading = new Text({
 
 #### Text Methods
 
--   **wordWrap**(text, charsPerLine) | Called automatically and returns an array of lines of text that fit within the given width
+-   **wordWrap**(`text, charsPerLine`) | Called automatically and returns an array of lines of text that fit within the given width
 
 ### Input
 
@@ -166,7 +207,7 @@ const inputPass = inputUser.extend({
 
 ##### Input Methods
 
--   **onChange**({value}) | Called when the value of the input changes
+-   **onChange**(`value`) | Called when the value of the input changes
 
 ### List
 
@@ -207,11 +248,12 @@ const listTheme = new List({
 
 #### List Methods
 
--   **onSelect**({selectedIndex, selectedItem}) | Called when the selected item changes or the enter key is pressed
--   **onChange**({activeIndex, activeIndex}) | Called when the active item changes
--   **gotoPrevious**() | Moves the active item previous
--   **gotoNext**() | Moves the active item next
--   **gotoIndex**(index) | Moves the active item to the given index
+-   **onSelect**(`{selectedIndex, selectedItem}`) | Called when the selected item changes or the enter key is pressed
+-   **onChange**(`{activeIndex, activeIndex}`) | Called when the active item changes
+-   **gotoActivePrevious**() | Moves the active item previous
+-   **gotoActiveNext**() | Moves the active item next
+-   **gotoActiveIndex**(`index`) | Moves the active item to the given index
+-   **selectIndex**(`index`) | Selects the item at the given index
 
 ### ScrollBar
 
@@ -300,20 +342,21 @@ The main static interface for rendering components to the console.
 
 -   **debug** | Optional default: false | boolean | Whether to log debug information to the console
 -   **paused** | Optional default: false | boolean | Whether to pause rendering
+-   **exitOnEscape** | Optional default: true | boolean | Whether to exit the process when the escape key is pressed while focused on the screen component
 
 ### DeluxeCLI Methods
 
--   **initialize**({fps = DEFAULT_FPS, autoUpdate = DEFAULT_AUTO_UPDATE} = {}) | Initializes the console for rendering
+-   **initialize**(`{fps = DEFAULT_FPS, autoUpdate = DEFAULT_AUTO_UPDATE, loggerOptions = null, exitOnEscape = true} = {}`) | Initializes the console for rendering
 -   **destroy**() | Destroys the console rendering
 -   **clear**() | Clears the screen
 -   **getWindowSize**() | Returns the size of the console window
--   **render**(screen, force = false) | Renders the sccreen to the console
--   **showLog**(messages = null) | Shows messages from the render log and hides the screen
+-   **render**(`screen, force = false`) | Renders the sccreen to the console
+-   **showLog**(`messages = null`) | Shows messages from the render log and hides the screen
 -   **hideLog**() | Hides the render log and shows the screen
--   **focus**(component) | Focuses on a focusable component
+-   **focus**(`component`) | Focuses on a focusable component
 -   **focusFirst**() | Focuses on the first focusable component
 -   **focusNext**() | Focuses on the next focusable component
--   **exit**() | Clear and reset the console and then terminate the process
+-   **exit**(`dontKillProcess = false`) | Clear and reset the console and then terminate the process
 
 ## Core
 
@@ -331,6 +374,7 @@ The following core classes are used to build the components.
         -   [Marble](#marble)
 -   [Constants](#constants)
     -   [ROOT](#root)
+    -   [POSITION](#position)
     -   [ORIGIN](#origin)
     -   [BORDER](#border)
     -   [CURSOR](#cursor)
@@ -353,29 +397,29 @@ The base class for all components.
 #### Component Methods
 
 -   **clone**() | Returns a new instance of the component with the same properties
--   **extend**(props) | Returns a new instance of the component with the given properties merged in
--   **compute**(params, {force = false, delta = 0, debug = false} = {}) | Recalculates the position and style of the component and its chil**dren**
--   **computeStyle**({parentComputedStyle} = {}, overrides = {}) | Recalculates the style of the component
--   **computePosition**({parentComputedPosition, previousChildPosition}, overrides = {}) | Recalculates the position of the component
--   **render**(parent) | Renders the component to the console
+-   **extend**(`props`) | Returns a new instance of the component with the given properties merged in
+-   **compute**(`params, {force = false, delta = 0, debug = false} = {}`) | Recalculates the position and style of the component and its chil**dren**
+-   **computeStyle**(`{parentComputedStyle} = {}, overrides = {}`) | Recalculates the style of the component
+-   **computePosition**(`{parentComputedPosition, previousChildPosition}, overrides = {}`) | Recalculates the position of the component
+-   **render**(`parent`) | Renders the component to the console
 -   **drawBackground**() | Draws the background to the console
 -   **drawBorder**() | Draws the border to the console
 -   **drawLabel**() | Draws the label to the console
--   **drawString**(str) | Draws a string to the console
+-   **drawString**(`str`) | Draws a string to the console
 -   **drawSelf**() | Draws the component to the console
 -   **renderChildren**() | Renders the children of the component to the console
 -   **onFocus**() | Called when the component is focused
 -   **onBlur**() | Called when the component focus is lost
--   **onKeyPress**(str, key) | Called when a key is pressed on a focused component or its children
--   **addChild**(child) | Adds a child to the component
--   **removeChild**(child) | Removes a child from the component
+-   **onKeyPress**(`str, key`) | Called when a key is pressed on a focused component or its children
+-   **addChild**(`child`) | Adds a child to the component
+-   **removeChild**(`child`) | Removes a child from the component
 -   **remove**() | Removes the component itself from its parent
--   **needsRender**(fromParent, debug = false) | Returns true if the component needs to be rendered
+-   **needsRender**(`fromParent, debug = false`) | Returns true if the component needs to be rendered
 -   **isRendered**() | Returns true if the component is currently part of the rendered tree
 
 ### Position
 
-The class for defining and computing the position of a component. The position is computed with respect to the parent's position/size and the previous child's position/size. If the previous child's origin is the same as this origin then the positioning is relative to the previous child. Supports percentages for the width/height. Based on the CSS box model. If the labelOriginX is null then the label follows the originX.
+The class for defining and computing the position of a component. The position is computed with respect to the parent's position/size and the previous child's position/size. If the previous child's origin is the same as this origin then the positioning is relative to the previous child. Supports percentages for the x/y/width/height. Based on the CSS box model. If the labelOriginX is null then the label follows the originX.
 
 #### Position Properties
 
@@ -398,12 +442,13 @@ The class for defining and computing the position of a component. The position i
 
 #### Position Methods
 
--   **clone**(intoPosition = null) | Returns a new instance of the position with the same properties
--   **extend**(props, intoPosition = null) | Returns a new instance of the position with the given properties merged in
--   **compute**(parentPosition, {previousChildPosition = null, intoPosition = null} = {}, overrides = {}) | Returns a new Position filled with the computed values
--   **calcDimension**(input, parentSize, margin) | Returns the calculated x/y dimension while parsing percentages
+-   **clone**(`intoPosition = null`) | Returns a new instance of the position with the same properties
+-   **extend**(`props, intoPosition = null`) | Returns a new instance of the position with the given properties merged in
+-   **compute**(`parentPosition, {previousChildPosition = null, intoPosition = null} = {}, overrides = {}`) | Returns a new Position filled with the computed values
+-   **calcValue**(`input, parentSize`) | Returns the calculated value while parsing percentages
+-   **calcDimension**(`input, parentSize, margin`) | Returns the calculated x/y dimension while parsing percentages
 -   **getScrollContentRange**() | Returns the range of the scrollable content
--   **shouldCopyProp**(prop) | Returns true if the given property should be copied when cloning. By default ignores methods and properties starting with "\_"
+-   **shouldCopyProp**(`prop`) | Returns true if the given property should be copied when cloning. By default ignores methods and properties starting with "\_"
 
 ### Style
 
@@ -422,10 +467,10 @@ The class for defining and computing the style of a component. The style is comp
 
 #### Style Methods
 
--   **clone**(intoStyle = null) | Returns a new instance of the style with the same properties
--   **extend**(fromStyle, soft = false, intoStyle = null) | Returns a new instance of the style with the given properties merged in
--   **compute**compute(parentStyle, {intoStyle} = {}, overrides = {}) | Returns a new Style filled with the computed values
--   **shouldCopyProp**(prop) | Returns true if the given property should be copied when cloning. By default ignores methods and properties starting with "\_"
+-   **clone**(`intoStyle = null`) | Returns a new instance of the style with the same properties
+-   **extend**(`fromStyle, soft = false, intoStyle = null`) | Returns a new instance of the style with the given properties merged in
+-   **compute**compute(`parentStyle, {intoStyle} = {}, overrides = {}`) | Returns a new Style filled with the computed values
+-   **shouldCopyProp**(`prop`) | Returns true if the given property should be copied when cloning. By default ignores methods and properties starting with "\_"
 
 ### Theme
 
@@ -438,7 +483,7 @@ The class for defining and applying themes to components. Themes consist of a ma
 
 #### Theme Methods
 
--   **applyToComponent**(component) | Applies the theme to the given component and its children
+-   **applyToComponent**(`component`) | Applies the theme to the given component and its children
 
 #### Theme Built-in
 
@@ -501,6 +546,17 @@ The root component id
 import {ROOT} from "deluxe-cli";
 console.log(ROOT); //"root"
 ```
+
+#### POSITION
+
+The position type
+
+```js
+import {POSITION} from "deluxe-cli";
+```
+
+-   **POSITION.RELATIVE** | "relative"
+-   **POSITION.ABSOLUTE** | "absolute"
 
 #### ORIGIN
 
@@ -605,31 +661,6 @@ Background colors
 -   **COLORS.BG.CYAN_BRIGHT**
 -   **COLORS.BG.WHITE_BRIGHT**
 
-### RenderLog
-
-The class for logging the rendering of components. Logs to a separate buffer that can be swapped with the current screen.
-
-```js
-import DeluxeCLI, {RenderLog} from "deluxe-cli";
-
-RenderLog.clear();
-RenderLog.log("Some info");
-
-//Display the render log on CTRL+L
-let showingLog = false;
-DeluxeCLI.onKeyPress = (str, key) => {
-	//ctrl+l to view render log
-	if (key.ctrl === true && key.name === "l") {
-		showingLog = !showingLog;
-		if (showingLog) {
-			DeluxeCLI.showLog();
-		} else {
-			DeluxeCLI.hideLog();
-		}
-	}
-};
-```
-
 ## Utils
 
 The following utility classes are available
@@ -674,7 +705,7 @@ This class is used to log messages to memory/console/file with different levels 
 
 #### Logger Static Methods
 
--   **createInstance**(options) | Create a new instance of the logger
+-   **createInstance**(`options`) | Create a new instance of the logger
 -   **destroyInstance**() | Destroy the instance of the logger
 -   **getInstance**() | Get the instance of the logger
 
@@ -698,20 +729,20 @@ Note: After creating an instance, the instance methods are available statically 
 
 #### Logger Methods
 
--   **debug**(...args) | Log a debug message
--   **info**(...args) | Log an info message
--   **log**(...args) | Log a message
--   **warn**(...args) | Log a warning message
--   **error**(...args) | Log an error message
--   **doLog**(level, ...args) | Log a message with the given level
--   **toMemory**(level, ...args) | Log a message to memory
--   **toConsole**(level, ...args) | Log a message to the console
--   **toFile**(level, ...args) | Log a message to a file
+-   **debug**(`...args`) | Log a debug message
+-   **info**(`...args`) | Log an info message
+-   **log**(`...args`) | Log a message
+-   **warn**(`...args`) | Log a warning message
+-   **error**(`...args`) | Log an error message
+-   **doLog**(`level, ...args`) | Log a message with the given level
+-   **toMemory**(`level, ...args`) | Log a message to memory
+-   **toConsole**(`level, ...args`) | Log a message to the console
+-   **toFile**(`level, ...args`) | Log a message to a file
 -   **clearMemory**() | Clear the memory log
--   **\_formatMessage**(format, level, ...args) | Format a message
--   **\_formatError**(format = Logger.FORMAT.ERROR_MESSAGE, err) | Format an error message
--   **\_formatFileName**(format = Logger.FORMAT.FILENAME) | Format a file name
--   **\_formatTimestamp**(format = Logger.FORMAT.TIMESTAMP) | Format a timestamp
+-   **\_formatMessage**(`format, level, ...args`) | Format a message
+-   **\_formatError**(`format = Logger.FORMAT.ERROR_MESSAGE, err`) | Format an error message
+-   **\_formatFileName**(`format = Logger.FORMAT.FILENAME`) | Format a file name
+-   **\_formatTimestamp**(`format = Logger.FORMAT.TIMESTAMP`) | Format a timestamp
 
 ### NormalTimer
 
@@ -729,6 +760,8 @@ A class used to measure time differences in milliseconds.
 
 ## TODO
 
+-   Add ScrollBar List example
+-   Add colored Text value example
 -   Add Checkbox component
 -   Add Radio component
 -   Add icons to the project?

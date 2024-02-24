@@ -1,6 +1,11 @@
 class Constants {
 	static ROOT = "root";
 
+	static POSITION = {
+		RELATIVE: "relative",
+		ABSOLUTE: "absolute"
+	};
+
 	static ORIGIN = {
 		X: {
 			LEFT: "left",
@@ -93,6 +98,7 @@ class Constants {
 }
 export default Constants;
 export const ROOT = Constants.ROOT;
+export const POSITION = Constants.POSITION;
 export const ORIGIN = Constants.ORIGIN;
 export const BORDER = Constants.BORDER;
 export const CURSOR = Constants.CURSOR;

@@ -101,8 +101,13 @@ class Input extends Component {
 		stdout.write(val.length > width ? val.slice(-width) : val);
 	}
 
-	onKeyPress(str, key) {
-		const {maxLength, disabled, allowedCharacters} = this;
+	_handlerKeyPress(str, key) {
+		const {maxLength, disabled, allowedCharacters, onKeyPress, onChange, _parent} = this;
+		if (onKeyPress) {
+			if (onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 
 		if (allowedCharacters.test(str)) {
 			if (disabled) {
@@ -111,33 +116,33 @@ class Input extends Component {
 			if (maxLength > 0) {
 				if (this.value + 1 <= maxLength) {
 					this.value += str;
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 				}
 			} else {
 				this.value += str;
-				if (this.onChange) {
-					this.onChange(this.value);
+				if (onChange) {
+					onChange(this.value);
 				}
 			}
 		} else {
 			switch (key.name) {
 				case "backspace":
 					this.value = this.value.slice(0, -1);
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 					break;
 				case "delete":
 					this.value = "";
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 					break;
 				default:
-					if (this._parent) {
-						this._parent.onKeyPress(str, key);
+					if (_parent) {
+						_parent._handlerKeyPress(str, key);
 					}
 					break;
 			}
