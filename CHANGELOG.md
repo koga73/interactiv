@@ -3,6 +3,7 @@
 -   Added onKeyPress / onFocus / onBlur callbacks for all components with the option to return false to prevent the default action
 -   Fixed issue with addChild if the child has already been added
 -   Added position type for relative/absolute positioning
+-   Added support for percentage based x/y
 
 # 0.3.0
 

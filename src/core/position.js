@@ -52,6 +52,7 @@ class Position {
 		this.extend = this.extend.bind(this);
 		this.compute = this.compute.bind(this);
 		this.calcInner = this.calcInner.bind(this);
+		this.calcValue = this.calcValue.bind(this);
 		this.calcDimension = this.calcDimension.bind(this);
 		this.getScrollContentRange = this.getScrollContentRange.bind(this);
 		this.shouldCopyProp = this.shouldCopyProp.bind(this);
@@ -110,7 +111,8 @@ class Position {
 		computed.height = this.calcDimension(height, parentPosition._innerHeight, marginTop + marginBottom);
 
 		//Origin X
-		computed.x = parentPosition._innerX + x + marginLeft;
+		computed.x = this.calcValue(x, parentPosition._innerWidth);
+		computed.x += parentPosition._innerX + marginLeft;
 		switch (originX) {
 			case ORIGIN.X.LEFT:
 				computed.x += 0;
@@ -124,7 +126,8 @@ class Position {
 		}
 
 		//Origin Y
-		computed.y = relativeY + y + marginTop;
+		computed.y = this.calcValue(y, parentPosition._innerHeight);
+		computed.y += relativeY + marginTop;
 		switch (originY) {
 			case ORIGIN.Y.TOP:
 				computed.y += 0;
@@ -157,6 +160,16 @@ class Position {
 		computed._innerHeight = computed.height - borderSize * 2 - paddingTop - paddingBottom;
 	}
 
+	//Supports percents
+	calcValue(input, parentSize) {
+		let size = parseInt(input);
+		if (size !== 0 && /%$/.test(input)) {
+			size = Math.floor(parentSize * (size / 100));
+		}
+		return size;
+	}
+
+	//Supports percents
 	calcDimension(input, parentSize, margin) {
 		let size = parseInt(input);
 		if (size !== 0 && /%$/.test(input)) {
