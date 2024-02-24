@@ -1,6 +1,7 @@
 # 0.4.0
 
 -   Added onKeyPress / onFocus / onBlur callbacks for all components with the option to return false to prevent the default action
+-   Fixed issue with addChild if the child has already been added
 
 # 0.3.0
 

@@ -730,9 +730,7 @@ A class used to measure time differences in milliseconds.
 ## TODO
 
 -   Support x/y percents
--   Fix bug with list auto-height?
 -   Add position relative/absolute
--   Fix addChild to check for existing child
 -   Add ScrollBar List example
 -   Add colored Text value example
 -   Add Checkbox component

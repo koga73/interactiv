@@ -334,6 +334,9 @@ class Component {
 		if (!children) {
 			throw new Error("Cannot add child to non-container");
 		}
+		if (children.indexOf(child) !== -1) {
+			return;
+		}
 		if (child instanceof Component) {
 			child._parent = this;
 		}
