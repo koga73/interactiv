@@ -21,7 +21,8 @@ class List extends Component {
 		activeIndex = -1,
 		autoSelect = false,
 		onSelect = null,
-		onChange = null
+		onChange = null,
+		...props
 	}) {
 		super({
 			id,
@@ -31,7 +32,8 @@ class List extends Component {
 			focusTrap: false,
 			children: null,
 			position: position ? position : List.DEFAULT_POSITION ? List.DEFAULT_POSITION.clone() : null,
-			style: style ? style : List.DEFAULT_STYLE ? List.DEFAULT_STYLE.clone() : null
+			style: style ? style : List.DEFAULT_STYLE ? List.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.items = items;

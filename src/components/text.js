@@ -29,7 +29,7 @@ class Text extends Component {
 	}
 
 	clone() {
-		const {id, label, _children: children, focusable, focusTrap, position, style, value} = this;
+		const {id, label, _children: children, focusable, focusTrap, position, style, value, ...props} = this;
 		return new Text({
 			id,
 			label,
@@ -38,7 +38,8 @@ class Text extends Component {
 			focusTrap,
 			position: position.clone(),
 			style: style.clone(),
-			value
+			value,
+			...props
 		});
 	}
 

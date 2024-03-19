@@ -14,7 +14,7 @@ class Window extends Component {
 	});
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Window.NAME];
 
-	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onClose = null, onSelect = null}) {
+	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onClose = null, onSelect = null, ...props}) {
 		super({
 			id,
 			label,
@@ -22,7 +22,8 @@ class Window extends Component {
 			focusTrap,
 			children,
 			position: position ? position : Window.DEFAULT_POSITION ? Window.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Window.DEFAULT_STYLE ? Window.DEFAULT_STYLE.clone() : null
+			style: style ? style : Window.DEFAULT_STYLE ? Window.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.userClosable = userClosable;

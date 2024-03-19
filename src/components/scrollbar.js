@@ -13,7 +13,7 @@ class ScrollBar extends Component {
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[ScrollBar.NAME];
 	static DEFAULT_FOCUS_STYLE = ThemeDefault.DEFAULT_FOCUS_MAP[ScrollBar.NAME];
 
-	constructor({id = "", label = "", children = [], focusable = true, focusStyle = null, position = null, style = null, scrollPosition = 0}) {
+	constructor({id = "", label = "", children = [], focusable = true, focusStyle = null, position = null, style = null, scrollPosition = 0, ...props}) {
 		super({
 			id,
 			label,
@@ -22,7 +22,8 @@ class ScrollBar extends Component {
 			focusTrap: false,
 			focusStyle: focusStyle ? focusStyle : ScrollBar.DEFAULT_FOCUS_MAP ? ScrollBar.DEFAULT_FOCUS_MAP.clone() : null,
 			position: position ? position : ScrollBar.DEFAULT_POSITION ? ScrollBar.DEFAULT_POSITION.clone() : null,
-			style: style ? style : ScrollBar.DEFAULT_STYLE ? ScrollBar.DEFAULT_STYLE.clone() : null
+			style: style ? style : ScrollBar.DEFAULT_STYLE ? ScrollBar.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.scrollPosition = scrollPosition;
