@@ -11,7 +11,7 @@ class Screen extends Component {
 	});
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Screen.NAME];
 
-	constructor({id = "", label = "", children = [], position = null, style = null, onSelect = null}) {
+	constructor({id = "", label = "", children = [], position = null, style = null, onSelect = null, ...props}) {
 		super({
 			id,
 			label,
@@ -19,7 +19,8 @@ class Screen extends Component {
 			focusTrap: true,
 			children,
 			position: position ? position : Screen.DEFAULT_POSITION ? Screen.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Screen.DEFAULT_STYLE ? Screen.DEFAULT_STYLE.clone() : null
+			style: style ? style : Screen.DEFAULT_STYLE ? Screen.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.onSelect = onSelect;

@@ -29,7 +29,7 @@ class Text extends Component {
 	}
 
 	clone() {
-		const {id, label, _children: children, focusable, focusTrap, position, style, value} = this;
+		const {id, label, _children: children, focusable, focusTrap, position, style, value, ...props} = this;
 		return new Text({
 			id,
 			label,
@@ -38,7 +38,8 @@ class Text extends Component {
 			focusTrap,
 			position: position.clone(),
 			style: style.clone(),
-			value
+			value,
+			...props
 		});
 	}
 
@@ -46,15 +47,24 @@ class Text extends Component {
 		if (!this._needsRender) {
 			return;
 		}
-		const {position, value} = this;
+		const {position, value, _computedStyle} = this;
+		const hasBorder = _computedStyle.border !== null;
+
+		const parentInnerWidth = parentDetails.parentComputedPosition._innerWidth;
 		if (position.width <= 0) {
-			const parentInnerWidth = parentDetails.parentComputedPosition._innerWidth;
-			overrides.width = position.calcDimension(Math.min(value.length, parentInnerWidth), parentInnerWidth, position.marginLeft + position.marginRight);
+			overrides.width = Math.min(value.length, parentInnerWidth) + position.paddingLeft + position.paddingRight;
+			if (hasBorder) {
+				overrides.width += 2;
+			}
 		}
-		this._lines = this.wordWrap(value, position.width || overrides.width);
+		const computedWidth = position.calcDimension(position.width || overrides.width, parentInnerWidth, position.marginLeft + position.marginRight);
+		this._lines = this.wordWrap(value, computedWidth);
 
 		if (position.height <= 0) {
-			overrides.height = this._lines.length;
+			overrides.height = this._lines.length + position.paddingTop + position.paddingBottom;
+			if (hasBorder) {
+				overrides.height += 2;
+			}
 		}
 		super.computePosition(parentDetails, overrides);
 	}

@@ -27,7 +27,8 @@ class Input extends Component {
 		disabled = false,
 		mask = null,
 		allowedCharacters = Input.DEFAUT_ALLOWED_CHARACTERS,
-		onChange = null
+		onChange = null,
+		...props
 	}) {
 		super({
 			id,
@@ -37,7 +38,8 @@ class Input extends Component {
 			focusStyle: focusStyle ? focusStyle : Input.DEFAULT_FOCUS_MAP ? Input.DEFAULT_FOCUS_MAP.clone() : null,
 			children: null,
 			position: position ? position : Input.DEFAULT_POSITION ? Input.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Input.DEFAULT_STYLE ? Input.DEFAULT_STYLE.clone() : null
+			style: style ? style : Input.DEFAULT_STYLE ? Input.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.value = value;

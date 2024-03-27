@@ -14,7 +14,7 @@ class Window extends Component {
 	});
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[Window.NAME];
 
-	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onClose = null, onSelect = null}) {
+	constructor({id = "", label = "", children = [], position = null, style = null, focusTrap = true, userClosable = false, onClose = null, onSelect = null, ...props}) {
 		super({
 			id,
 			label,
@@ -22,7 +22,8 @@ class Window extends Component {
 			focusTrap,
 			children,
 			position: position ? position : Window.DEFAULT_POSITION ? Window.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Window.DEFAULT_STYLE ? Window.DEFAULT_STYLE.clone() : null
+			style: style ? style : Window.DEFAULT_STYLE ? Window.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.userClosable = userClosable;
@@ -52,9 +53,10 @@ class Window extends Component {
 		}
 		const {position, _computedPosition, _children} = this;
 		const childrenLen = _children.length;
-		if (_computedPosition.height <= 0 && childrenLen > 0) {
-			//TODO: Don't change original height value
-			position.height = _children.reduce((acc, child) => {
+
+		//Determine height of children
+		if (position.height <= 0 && childrenLen > 0) {
+			position.childrenHeight = _children.reduce((acc, child) => {
 				const {_computedPosition: childPosition} = child;
 				return acc + childPosition.marginTop + childPosition.height + childPosition.marginBottom;
 			}, 0);
@@ -62,6 +64,24 @@ class Window extends Component {
 			//Recompute
 			super.compute(params, {...options, force: true});
 		}
+	}
+
+	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
+		const {position, _computedStyle} = this;
+		const hasBorder = _computedStyle.border !== null;
+
+		//Auto-height
+		if (position.height <= 0) {
+			overrides.height = position.childrenHeight || 0 + position.paddingTop + position.paddingBottom;
+			if (hasBorder) {
+				overrides.height += 2;
+			}
+		}
+
+		super.computePosition(parentDetails, overrides);
 	}
 
 	_handlerKeyPress(str, key) {
