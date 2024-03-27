@@ -27,7 +27,8 @@ class Input extends Component {
 		disabled = false,
 		mask = null,
 		allowedCharacters = Input.DEFAUT_ALLOWED_CHARACTERS,
-		onChange = null
+		onChange = null,
+		...props
 	}) {
 		super({
 			id,
@@ -37,7 +38,8 @@ class Input extends Component {
 			focusStyle: focusStyle ? focusStyle : Input.DEFAULT_FOCUS_MAP ? Input.DEFAULT_FOCUS_MAP.clone() : null,
 			children: null,
 			position: position ? position : Input.DEFAULT_POSITION ? Input.DEFAULT_POSITION.clone() : null,
-			style: style ? style : Input.DEFAULT_STYLE ? Input.DEFAULT_STYLE.clone() : null
+			style: style ? style : Input.DEFAULT_STYLE ? Input.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.value = value;
@@ -101,8 +103,13 @@ class Input extends Component {
 		stdout.write(val.length > width ? val.slice(-width) : val);
 	}
 
-	onKeyPress(str, key) {
-		const {maxLength, disabled, allowedCharacters} = this;
+	_handlerKeyPress(str, key) {
+		const {maxLength, disabled, allowedCharacters, onKeyPress, onChange, _parent} = this;
+		if (onKeyPress) {
+			if (onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 
 		if (allowedCharacters.test(str)) {
 			if (disabled) {
@@ -111,33 +118,33 @@ class Input extends Component {
 			if (maxLength > 0) {
 				if (this.value + 1 <= maxLength) {
 					this.value += str;
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 				}
 			} else {
 				this.value += str;
-				if (this.onChange) {
-					this.onChange(this.value);
+				if (onChange) {
+					onChange(this.value);
 				}
 			}
 		} else {
 			switch (key.name) {
 				case "backspace":
 					this.value = this.value.slice(0, -1);
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 					break;
 				case "delete":
 					this.value = "";
-					if (this.onChange) {
-						this.onChange(this.value);
+					if (onChange) {
+						onChange(this.value);
 					}
 					break;
 				default:
-					if (this._parent) {
-						this._parent.onKeyPress(str, key);
+					if (_parent) {
+						_parent._handlerKeyPress(str, key);
 					}
 					break;
 			}

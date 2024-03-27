@@ -13,7 +13,7 @@ class ScrollBar extends Component {
 	static DEFAULT_STYLE = ThemeDefault.DEFAULT_MAP[ScrollBar.NAME];
 	static DEFAULT_FOCUS_STYLE = ThemeDefault.DEFAULT_FOCUS_MAP[ScrollBar.NAME];
 
-	constructor({id = "", label = "", children = [], focusable = true, focusStyle = null, position = null, style = null, scrollPosition = 0}) {
+	constructor({id = "", label = "", children = [], focusable = true, focusStyle = null, position = null, style = null, scrollPosition = 0, ...props}) {
 		super({
 			id,
 			label,
@@ -22,7 +22,8 @@ class ScrollBar extends Component {
 			focusTrap: false,
 			focusStyle: focusStyle ? focusStyle : ScrollBar.DEFAULT_FOCUS_MAP ? ScrollBar.DEFAULT_FOCUS_MAP.clone() : null,
 			position: position ? position : ScrollBar.DEFAULT_POSITION ? ScrollBar.DEFAULT_POSITION.clone() : null,
-			style: style ? style : ScrollBar.DEFAULT_STYLE ? ScrollBar.DEFAULT_STYLE.clone() : null
+			style: style ? style : ScrollBar.DEFAULT_STYLE ? ScrollBar.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.scrollPosition = scrollPosition;
@@ -106,7 +107,12 @@ class ScrollBar extends Component {
 		stdout.cursorTo(cursorStart[0], cursorStart[1] + thumbY);
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		if (this.onKeyPress) {
+			if (this.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "up":
 				this.scrollPosition = Math.max(0, this.scrollPosition - this._scrollStep);
@@ -114,9 +120,10 @@ class ScrollBar extends Component {
 			case "down":
 				this.scrollPosition = Math.min(1, this.scrollPosition + this._scrollStep);
 				break;
+			//TODO: Add page up and page down
 			default:
 				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+					this._parent._handlerKeyPress(str, key);
 				}
 				break;
 		}

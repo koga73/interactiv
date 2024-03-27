@@ -21,7 +21,8 @@ class List extends Component {
 		activeIndex = -1,
 		autoSelect = false,
 		onSelect = null,
-		onChange = null
+		onChange = null,
+		...props
 	}) {
 		super({
 			id,
@@ -31,7 +32,8 @@ class List extends Component {
 			focusTrap: false,
 			children: null,
 			position: position ? position : List.DEFAULT_POSITION ? List.DEFAULT_POSITION.clone() : null,
-			style: style ? style : List.DEFAULT_STYLE ? List.DEFAULT_STYLE.clone() : null
+			style: style ? style : List.DEFAULT_STYLE ? List.DEFAULT_STYLE.clone() : null,
+			...props
 		});
 
 		this.items = items;
@@ -177,26 +179,32 @@ class List extends Component {
 		}
 	}
 
-	onKeyPress(str, key) {
+	_handlerKeyPress(str, key) {
+		const {onKeyPress, gotoActivePrevious, gotoActiveNext, selectIndex, _parent} = this;
+		if (onKeyPress) {
+			if (onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 		switch (key.name) {
 			case "up":
-				this.gotoActivePrevious();
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				gotoActivePrevious();
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 			case "down":
-				this.gotoActiveNext();
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				gotoActiveNext();
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 			case "return":
-				this.selectIndex(this.activeIndex);
+				selectIndex(this.activeIndex);
 				break;
 			default:
-				if (this._parent) {
-					this._parent.onKeyPress(str, key);
+				if (_parent) {
+					_parent._handlerKeyPress(str, key);
 				}
 				break;
 		}

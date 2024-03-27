@@ -1,6 +1,6 @@
 import readline from "readline";
 
-import {ROOT, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
+import {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS} from "./core/constants.js";
 import Position from "./core/position.js";
 import Style from "./core/style.js";
 import Component from "./core/component.js";
@@ -20,6 +20,7 @@ class _class {
 	static debug = false;
 	static paused = false;
 	static exitOnEscape = true;
+	static onKeyPress = null;
 
 	static _currentScreen = null;
 	static _focus = null;
@@ -27,8 +28,9 @@ class _class {
 	static _timer = null;
 	static _parentComputedPosition = new Position();
 
-	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE, loggerOptions = null, exitOnEscape = true} = {}) {
+	static initialize({fps = _class.DEFAULT_FPS, autoUpdate = _class.DEFAULT_AUTO_UPDATE, loggerOptions = null, exitOnEscape = true, onKeyPress = null} = {}) {
 		_class.exitOnEscape = exitOnEscape;
+		_class.onKeyPress = onKeyPress;
 		if (autoUpdate) {
 			_class._autoUpdateInterval = setInterval(_class.render, Math.floor(1000 / fps));
 			_class._timer = new NormalTimer();
@@ -116,7 +118,7 @@ class _class {
 				_class.focusFirst();
 			}
 			if (_class._focus) {
-				_class._focus.onFocus();
+				_class._focus._handlerFocus();
 			}
 
 			//Debug
@@ -159,7 +161,7 @@ class _class {
 			if (_class.debug) {
 				Logger.debug(`'${_class._focus.id}' - blur`);
 			}
-			_class._focus.onBlur();
+			_class._focus._handlerBlur();
 		}
 		if (_class.debug) {
 			Logger.debug(`'${component.id}' - focus`);
@@ -210,6 +212,12 @@ class _class {
 	}
 
 	static _handler_keypress(str, key) {
+		if (_class.onKeyPress) {
+			if (_class.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
+
 		//ctrl+c to quit
 		if (key.ctrl === true && key.name === "c") {
 			_class.exit();
@@ -219,10 +227,6 @@ class _class {
 			//Note that on Windows "shift+tab" doesn't come through :\
 			_class.focusNext();
 			return;
-		}
-
-		if (_class.onKeyPress) {
-			_class.onKeyPress(str, key);
 		}
 
 		//Exit on escape
@@ -238,7 +242,7 @@ class _class {
 					}
 					break;
 			}
-			_class._focus.onKeyPress(str, key);
+			_class._focus._handlerKeyPress(str, key);
 		}
 	}
 
@@ -255,7 +259,7 @@ class _class {
 }
 
 export default _class;
-export {ROOT, ORIGIN, BORDER, CURSOR, COLORS};
+export {ROOT, POSITION, ORIGIN, BORDER, CURSOR, COLORS};
 export {Position, Style, Component};
 export {Screen, Window, Text, Input, Button, List, ScrollBar};
 

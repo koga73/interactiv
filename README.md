@@ -374,6 +374,7 @@ The following core classes are used to build the components.
         -   [Marble](#marble)
 -   [Constants](#constants)
     -   [ROOT](#root)
+    -   [POSITION](#position)
     -   [ORIGIN](#origin)
     -   [BORDER](#border)
     -   [CURSOR](#cursor)
@@ -418,7 +419,7 @@ The base class for all components.
 
 ### Position
 
-The class for defining and computing the position of a component. The position is computed with respect to the parent's position/size and the previous child's position/size. If the previous child's origin is the same as this origin then the positioning is relative to the previous child. Supports percentages for the width/height. Based on the CSS box model. If the labelOriginX is null then the label follows the originX.
+The class for defining and computing the position of a component. The position is computed with respect to the parent's position/size and the previous child's position/size. If the previous child's origin is the same as this origin then the positioning is relative to the previous child. Supports percentages for the x/y/width/height. Based on the CSS box model. If the labelOriginX is null then the label follows the originX.
 
 #### Position Properties
 
@@ -444,6 +445,7 @@ The class for defining and computing the position of a component. The position i
 -   **clone**(`intoPosition = null`) | Returns a new instance of the position with the same properties
 -   **extend**(`props, intoPosition = null`) | Returns a new instance of the position with the given properties merged in
 -   **compute**(`parentPosition, {previousChildPosition = null, intoPosition = null} = {}, overrides = {}`) | Returns a new Position filled with the computed values
+-   **calcValue**(`input, parentSize`) | Returns the calculated value while parsing percentages
 -   **calcDimension**(`input, parentSize, margin`) | Returns the calculated x/y dimension while parsing percentages
 -   **getScrollContentRange**() | Returns the range of the scrollable content
 -   **shouldCopyProp**(`prop`) | Returns true if the given property should be copied when cloning. By default ignores methods and properties starting with "\_"
@@ -544,6 +546,17 @@ The root component id
 import {ROOT} from "deluxe-cli";
 console.log(ROOT); //"root"
 ```
+
+#### POSITION
+
+The position type
+
+```js
+import {POSITION} from "deluxe-cli";
+```
+
+-   **POSITION.RELATIVE** | "relative"
+-   **POSITION.ABSOLUTE** | "absolute"
 
 #### ORIGIN
 
@@ -747,6 +760,8 @@ A class used to measure time differences in milliseconds.
 
 ## TODO
 
+-   Add ScrollBar List example
+-   Add colored Text value example
 -   Add Checkbox component
 -   Add Radio component
 -   Add icons to the project?

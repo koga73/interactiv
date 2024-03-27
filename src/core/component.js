@@ -5,7 +5,19 @@ import Logger from "../utils/logger.js";
 
 //Note: position is relative, computedPosition is absolute
 class Component {
-	constructor({id = "", label = "", children = [], focusable = false, focusTrap = false, focusStyle = null, position = null, style = null}) {
+	constructor({
+		id = "",
+		label = "",
+		children = [],
+		focusable = false,
+		focusTrap = false,
+		focusStyle = null,
+		position = null,
+		style = null,
+		onFocus = null,
+		onBlur = null,
+		onKeyPress = null
+	}) {
 		this.id = id;
 		if (!this.id) {
 			throw new Error("Component must have an id");
@@ -16,6 +28,9 @@ class Component {
 		this.focusStyle = focusStyle;
 		this.position = position ? position : new Position();
 		this.style = style ? style : new Style();
+		this.onFocus = onFocus;
+		this.onBlur = onBlur;
+		this.onKeyPress = onKeyPress;
 
 		this.clone = this.clone.bind(this);
 		this.extend = this.extend.bind(this);
@@ -29,9 +44,9 @@ class Component {
 		this.drawString = this.drawString.bind(this);
 		this.drawSelf = this.drawSelf.bind(this);
 		this.renderChildren = this.renderChildren.bind(this);
-		this.onFocus = this.onFocus.bind(this);
-		this.onBlur = this.onBlur.bind(this);
-		this.onKeyPress = this.onKeyPress.bind(this);
+		this._handlerFocus = this._handlerFocus.bind(this);
+		this._handlerBlur = this._handlerBlur.bind(this);
+		this._handlerKeyPress = this._handlerKeyPress.bind(this);
 		this.addChild = this.addChild.bind(this);
 		this.removeChild = this.removeChild.bind(this);
 		this.remove = this.remove.bind(this);
@@ -285,23 +300,42 @@ class Component {
 		stdout.write(str);
 	}
 
-	onFocus() {
+	_handlerFocus() {
 		this._focused = true;
+
+		if (this.onFocus) {
+			if (this.onFocus() === false) {
+				return;
+			}
+		}
 		this.drawSelf();
 	}
 
-	onBlur() {
+	_handlerBlur() {
 		this._focused = false;
+
+		if (this.onBlur) {
+			if (this.onBlur() === false) {
+				return;
+			}
+		}
 	}
 
-	onKeyPress(str, key) {
-		//Not implemented
+	_handlerKeyPress(str, key) {
+		if (this.onKeyPress) {
+			if (this.onKeyPress(str, key) === false) {
+				return;
+			}
+		}
 	}
 
 	addChild(child) {
 		const {_children: children} = this;
 		if (!children) {
 			throw new Error("Cannot add child to non-container");
+		}
+		if (children.indexOf(child) !== -1) {
+			return;
 		}
 		if (child instanceof Component) {
 			child._parent = this;
