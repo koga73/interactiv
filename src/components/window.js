@@ -52,9 +52,10 @@ class Window extends Component {
 		}
 		const {position, _computedPosition, _children} = this;
 		const childrenLen = _children.length;
-		if (_computedPosition.height <= 0 && childrenLen > 0) {
-			//TODO: Don't change original height value
-			position.height = _children.reduce((acc, child) => {
+
+		//Determine height of children
+		if (position.height <= 0 && childrenLen > 0) {
+			position.childrenHeight = _children.reduce((acc, child) => {
 				const {_computedPosition: childPosition} = child;
 				return acc + childPosition.marginTop + childPosition.height + childPosition.marginBottom;
 			}, 0);
@@ -62,6 +63,24 @@ class Window extends Component {
 			//Recompute
 			super.compute(params, {...options, force: true});
 		}
+	}
+
+	computePosition(parentDetails, overrides = {}) {
+		if (!this._needsRender) {
+			return;
+		}
+		const {position, _computedStyle} = this;
+		const hasBorder = _computedStyle.border !== null;
+
+		//Auto-height
+		if (position.height <= 0) {
+			overrides.height = position.childrenHeight || 0 + position.paddingTop + position.paddingBottom;
+			if (hasBorder) {
+				overrides.height += 2;
+			}
+		}
+
+		super.computePosition(parentDetails, overrides);
 	}
 
 	onKeyPress(str, key) {
